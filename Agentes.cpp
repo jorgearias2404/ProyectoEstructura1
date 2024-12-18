@@ -67,18 +67,57 @@ bool ValidarDistanciaNarizLabio(float A){
  return false;
 }
 
-void CargarElementos(){
-Archivo.open("dataBase.in",ios::in);//se abre el archivo en modo lectura
+Persona* CargarElementos(){
+    Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
 
-if (Archivo.fail())
-{
-  cout<<"Error al abrir el archivo"<<endl;
-  return;
+    if (Archivo.fail())
+    {
+        cout << "Error al abrir el archivo" << endl;
+        return;
+    }
+
+    string linea;
+    getline(Archivo, linea);
+    int cantidadPersonas = stoi(linea); // Leer la cantidad de personas
+  Persona* personas = new Persona[cantidadPersonas];
+    for (int i = 0; i < cantidadPersonas; i++)
+    {
+        Persona p;
+        p.Id = i + 1; // Asignar un ID único
+
+        getline(Archivo, p.Nombre); // Leer nombre
+        getline(Archivo, p.Especie); // Leer especie
+
+        // Leer altura y validar
+        getline(Archivo, linea);
+        p.Altura = stof(linea);
+
+        // Leer capacidad mágica y convertir a booleano
+        getline(Archivo, linea);
+        p.Magia = (linea == "true");
+
+        // Leer medidas de la cara
+        getline(Archivo, linea);
+        p.Mi_Rostro.Profundidad_Ojos = stof(linea);
+
+        getline(Archivo, linea);
+        p.Mi_Rostro.Distancia_Ojos = stof(linea);
+
+        getline(Archivo, linea);
+        p.Mi_Rostro.Distancia_Frente_Nariz = stof(linea);
+
+        getline(Archivo, linea);
+        p.Mi_Rostro.Distancia_Nariz_Labio = stof(linea);
+
+        // Almacenar la persona en el arreglo
+        personas[i] = p;
+    }
+    Persona *Arreglo = personas;
+    delete[] personas; // Liberar memoria del arreglo temporal 
+ 
+    Archivo.close(); // Cerrar el archivo
+    return Arreglo;
 }
-
-}
-
-
 bool Validar_Cara(Cara A,Cara B){
   
   bool Rasgos_Coincidentes = false;
