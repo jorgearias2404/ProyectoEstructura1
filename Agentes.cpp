@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -26,61 +27,55 @@ struct Persona
 
 };
 
+ifstream Archivo;
 //EXISTEN VALORES FIJOSQUE NO SON ALTERABLES?
-bool Rango (Cara A) {
-  if(A.Profundidad_Ojos>=0.1&&A.Profundidad_Ojos<=0.5)
-  {
-    if (A.Distancia_Frente_Nariz<=4&&A.Distancia_Frente_Nariz>=1)
-       {
-        if (A.Distancia_Nariz_Labio<=0.5&&A.Distancia_Nariz_Labio>=0.1)
-        {
-          if (A.Distancia_Ojos<=0.5&&A.Distancia_Ojos>=0.1)
-          {
-            return false;//ESTA EN CAMPOS NORMALES
-          }
-          
-        }
-        
-       }
-  }
-      
-    return true; //CAMPOS ANORMALES  
-  }
+
 bool ValidarTamanio(float A)
 {
-  if (1<=A&&A<=20)
+  if ((1<=A+Rango_Error && A-Rango_Error<=20)||(1<=A-Rango_Error && A+Rango_Error<=20))
   {
     return true;
   }
   return false;
 }
 bool ValidarProfundidadOjos(float A){
-if (0.1<=A&&A<=0.5)
-{
-  return true;
-}
-
+  if ((0.1<=A+Rango_Error&&A-Rango_Error<=0.5)||(0.1<=A-Rango_Error&&A+Rango_Error<=0.5))
+    {
+      return true;
+    }
+return false;
 }
 bool ValidarDistanciaOjos(float A){
-  if (0.1<=A&&A<=0.5)
+  if ((0.1<=A+Rango_Error&&A-Rango_Error<=0.5)||(0.1<=A-Rango_Error&&A+Rango_Error<=0.5))
   {
     return true;
   }
   return false;
 }
 bool ValidarDistanciaNarizFrente(float A){
-  if (1<=A&&A<=4)
+  if ((1<=A+Rango_Error&&A-Rango_Error<=4)||(1<=A+Rango_Error&&A-Rango_Error<=4))
   {
     return true;
   }
    return false;
 }
 bool ValidarDistanciaNarizLabio(float A){
- if (0.1<=A&&A<=0.5)
+ if ((0.1<=A+Rango_Error&&A-Rango_Error<=0.5)||(0.1<=A-Rango_Error&&A+Rango_Error<=0.5))
  {
   return true;
  }
  return false;
+}
+
+void CargarElementos(){
+Archivo.open("dataBase.in",ios::in);//se abre el archivo en modo lectura
+
+if (Archivo.fail())
+{
+  cout<<"Error al abrir el archivo"<<endl;
+  return;
+}
+
 }
 
 
