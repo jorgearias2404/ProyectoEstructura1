@@ -67,13 +67,31 @@ bool ValidarDistanciaNarizLabio(float A){
  return false;
 }
 
+
+void CantidadPersonas(int& numero)
+{
+   Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
+   
+    if (Archivo.fail())
+    {
+        cout << "Error al abrir el archivo" << endl;
+        exit(1);
+    }
+   string linea;
+
+   getline(Archivo,linea);
+    
+   numero = stoi(linea);
+Archivo.close();
+}
 Persona* CargarElementos(){
-    Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
+     Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
+
 
     if (Archivo.fail())
     {
         cout << "Error al abrir el archivo" << endl;
-        return;
+        return NULL;
     }
 
     string linea;
@@ -161,7 +179,6 @@ bool Sospechoso(Persona A){//Validamossi es un posible sospechoso
 return true;
  
 }
-
 bool TamanioSospechoso(Persona A, Persona B){//Validamossi existe un cambioen su tamanio que pueda ser motivo de sospecha
 
 if (A.Altura<B.Altura+Rango_Error||A.Altura<B.Altura-Rango_Error)
@@ -170,7 +187,6 @@ if (A.Altura<B.Altura+Rango_Error||A.Altura<B.Altura-Rango_Error)
 }
 
 }
-
 bool EsCambiaFormas(Persona A, Persona B)//Validamos si hay cambios en las formas de las personas  
 {
   if (Sospechoso(A)&&Sospechoso(B))//Validamos si ambos son sospechosos
@@ -180,40 +196,29 @@ bool EsCambiaFormas(Persona A, Persona B)//Validamos si hay cambios en las forma
   }
   
 }
-int main(){
-Persona Jan;
-Jan.Altura=10.55;
-Jan.Especie="Humano";
-Jan.Id=1;
-Jan.Nombre= "Jan Marco";
-Jan.Magia=true;
-Jan.Mi_Rostro.Profundidad_Ojos=0.12;
-Jan.Mi_Rostro.Distancia_Ojos=0.2;
-Jan.Mi_Rostro.Distancia_Frente_Nariz=1.25;
-Jan.Mi_Rostro.Distancia_Nariz_Labio=0.238;
-Persona Jorge;
-Jorge.Altura=10.2;
-Jorge.Especie="Elfo";
-Jorge.Id=2;
-Jorge.Nombre= "Jorge Arias";
-Jorge.Magia=false;
-Jorge.Mi_Rostro.Profundidad_Ojos=0.13;
-Jorge.Mi_Rostro.Distancia_Ojos=0.2;
-Jorge.Mi_Rostro.Distancia_Frente_Nariz=2.1;
-Jorge.Mi_Rostro.Distancia_Nariz_Labio=0.239;
-Persona Sergio;
-Sergio.Altura=10.55;
-Sergio.Especie="Humano";
-Sergio.Id=3;
-Sergio.Nombre= "Sergio Lopez";
-Sergio.Magia=false;
-Sergio.Mi_Rostro.Profundidad_Ojos=0.12;
-Sergio.Mi_Rostro.Distancia_Ojos=0.2;
-Sergio.Mi_Rostro.Distancia_Frente_Nariz=1.25;
-Sergio.Mi_Rostro.Distancia_Nariz_Labio=0.238;
-    
-cout<<EsCambiaFormas(Sergio,Jan);
 
+
+void ImprimirLista(Persona *Personas,int N){
+
+  for (int i = 0; i < N; i++)
+  {
+    cout<<"--------------"<<endl;
+    cout<<"Persona "<<i+1<<endl;
+    cout<<"Nombre: "<<Personas[i].Nombre<<endl;
+    cout<<"Especie: "<<Personas[i].Especie<<endl;
+    cout<<"Altura: "<<Personas[i].Altura<<endl;
+    cout<<"Magia: "<<Personas[i].Magia<<endl;
+ 
+  }
+  
+
+}
+int main(){
+int PersonasCanti;
+Persona *Personas;
+CantidadPersonas(PersonasCanti);//ALMACENA LA CANTIDAD PERSONAS 
+Personas = CargarElementos();
+ImprimirLista(Personas,PersonasCanti);
 return 0;
 }
  
