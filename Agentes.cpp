@@ -1,12 +1,13 @@
-#include <string>
 #include <iostream>
 #include <fstream>
 
 using namespace std;
 
+
 const int Cantidad_Especies = 10;
 const string Especies[Cantidad_Especies] ={"Humano","Kripsan","Elfo","Enano","Goliat","Orco","Ubarikiwe","Hada","Celcoa","Drakna'ar" };
 const float Rango_Error=0.05;
+
 struct Cara
 {
     float Profundidad_Ojos;
@@ -14,6 +15,13 @@ struct Cara
     float Distancia_Frente_Nariz;
     float Distancia_Nariz_Labio;
 
+
+ Cara(){
+    Profundidad_Ojos=0;
+    Distancia_Ojos=0;
+    Distancia_Frente_Nariz=0;
+    Distancia_Nariz_Labio=0;
+ }
 };
 
 struct Persona
@@ -24,49 +32,61 @@ struct Persona
     float Altura;
     bool Magia;
     Cara Mi_Rostro;
+    bool Guardado;
 
+ Persona(){
+     Id=0;
+     Especie="";
+     Altura=0;
+     Magia=false;
+     Guardado=false;
+ }
 };
 
+
 ifstream Archivo;
-//EXISTEN VALORES FIJOSQUE NO SON ALTERABLES?
+
 //estas funciones solo aseguran que los valores proporcionados estan en los intervalos correspondientes
-bool ValidarTamanio(float A)
+bool ValidarRangoError(float Base,float Clon)
 {
-  if ((1<=A+Rango_Error && A-Rango_Error<=20)||(1<=A-Rango_Error && A+Rango_Error<=20))
-  {
-    return true;
-  }
-  return false;
-}
-bool ValidarProfundidadOjos(float A){
-  if ((0.1<=A+Rango_Error&&A-Rango_Error<=0.5)||(0.1<=A-Rango_Error&&A+Rango_Error<=0.5))
+   if (Base>Clon)
+   {
+    if (Base-Clon>Rango_Error)
     {
       return true;
     }
-return false;
-}
-bool ValidarDistanciaOjos(float A){
-  if ((0.1<=A+Rango_Error&&A-Rango_Error<=0.5)||(0.1<=A-Rango_Error&&A+Rango_Error<=0.5))
-  {
-    return true;
-  }
+   }
+   else
+   {
+    if (Clon-Base>Rango_Error)
+    {
+      return true;
+    }
+   }
+   
   return false;
 }
-bool ValidarDistanciaNarizFrente(float A){
-  if ((1<=A+Rango_Error&&A-Rango_Error<=4)||(1<=A+Rango_Error&&A-Rango_Error<=4))
-  {
-    return true;
-  }
-   return false;
-}
-bool ValidarDistanciaNarizLabio(float A){
- if ((0.1<=A+Rango_Error&&A-Rango_Error<=0.5)||(0.1<=A-Rango_Error&&A+Rango_Error<=0.5))
- {
-  return true;
- }
- return false;
-}
 
+bool EnRangoAltura(Persona Base,Persona Clon){
+ if (Base.Altura>Clon.Altura)
+ {
+     if (Base.Altura-Clon.Altura<=1)
+     {
+      return true;
+     }
+ }
+ else
+ {
+     if (Clon.Altura-Base.Altura<=1)
+     {
+      return true;
+     }
+ }
+ 
+
+ return false;
+  
+}
 
 void CantidadPersonas(int& numero){
    Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
@@ -150,12 +170,15 @@ void ImprimirLista(Persona *Personas,int N){
   for (int i = 0; i < N; i++)
   {
     cout<<"--------------"<<endl;
-  
     cout<<"Persona "<<Personas[i].Id<<endl;
     cout<<"Nombre: "<<Personas[i].Nombre<<endl;
     cout<<"Especie: "<<Personas[i].Especie<<endl;
     cout<<"Altura: "<<Personas[i].Altura<<endl;
     cout<<"Magia: "<<Personas[i].Magia<<endl;
+    cout<<"Profundidad ojos: "<<Personas[i].Mi_Rostro.Profundidad_Ojos<<endl;
+    cout<<"Distancia ojos: "<<Personas[i].Mi_Rostro.Distancia_Ojos<<endl;
+    cout<<"Distancia frente nariz: "<<Personas[i].Mi_Rostro.Distancia_Frente_Nariz<<endl;
+    cout<<"Distancia nariz labio: "<<Personas[i].Mi_Rostro.Distancia_Nariz_Labio<<endl;
  
   }
   
@@ -171,41 +194,43 @@ void LLenarId(Persona *Personas,int N){
   
 
 }
+
 bool AlturaSospechosa(Persona Base,Persona Clon){
-     if (ValidarTamanio(Base.Altura)&&ValidarTamanio(Clon.Altura))
+     if (ValidarRangoError(Base.Altura,Clon.Altura))
      {
-       if (Base.Altura<Clon.Altura||Base.Altura>Clon.Altura)
+       if (EnRangoAltura(Base,Clon))
        {
-        return true;
+         return true;
        }
+       
      }
      return false;
      
 }
 bool ProfundidadOjosSospechosa(Persona Base,Persona Clon){
-    if (ValidarProfundidadOjos(Base.Mi_Rostro.Profundidad_Ojos)&&ValidarProfundidadOjos(Clon.Mi_Rostro.Profundidad_Ojos))
-     {
-       if (Base.Mi_Rostro.Profundidad_Ojos<Clon.Mi_Rostro.Profundidad_Ojos||Base.Mi_Rostro.Profundidad_Ojos >Clon.Mi_Rostro.Profundidad_Ojos)
+  
+       if (Base.Mi_Rostro.Profundidad_Ojos<Clon.Mi_Rostro.Profundidad_Ojos)
        {
         return true;
        }
-     }
+     
      return false;
 }
 bool CompartenRasgosSospechoso(Persona Base,Persona Clon){
-  if (Base.Mi_Rostro.Distancia_Frente_Nariz==Clon.Mi_Rostro.Distancia_Frente_Nariz)
-  {
+ if (ValidarRangoError(Base.Mi_Rostro.Distancia_Frente_Nariz,Clon.Mi_Rostro.Distancia_Frente_Nariz)==false)//es decir esta dentro del rango de error
+ {
+   return true;
+ }
+//nariz labio
+ if (ValidarRangoError(Base.Mi_Rostro.Distancia_Nariz_Labio,Clon.Mi_Rostro.Distancia_Nariz_Labio)==false)//es decir esta dentro del rango de error
+ {
     return true;
-  }
-  if (Base.Mi_Rostro.Distancia_Nariz_Labio==Clon.Mi_Rostro.Distancia_Nariz_Labio)
-  {
+ }
+//distancia ojos
+  if (ValidarRangoError(Base.Mi_Rostro.Distancia_Ojos,Clon.Mi_Rostro.Distancia_Ojos)==false)//es decir esta dentro del rango de error
+ {
     return true;
-  }
-  
-  if (Base.Mi_Rostro.Distancia_Ojos==Clon.Mi_Rostro.Distancia_Ojos)
-  {
-    return true;
-  }
+ }
   return false;
 
 }
@@ -237,17 +262,31 @@ int coincidencia=0;
 
 
 bool EsCambiaFormas(Persona Base,Persona Clon){
-if (CompartenRasgosSospechoso(Base,Clon))
+if (Clon.Magia!=true&&Base.Magia!=true)
 {
-  if (ProfundidadOjosSospechosa(Base,Clon))
-  {
-    if (AlturaSospechosa(Base,Clon))
-    {
-      return true;
-    }
-    
-  }
+    if (Clon.Especie!=Especies[1] && Base.Especie!=Especies[1])
+      {
+       if (CompartenRasgosSospechoso(Base,Clon))
+        {
+        
+          if (ProfundidadOjosSospechosa(Base,Clon))
+          {
+            if (AlturaSospechosa(Base,Clon))
+            {
+              if (Clon.Guardado==false)
+              {
+                return true;
+              }
+              
+            }
+            
+          }
+        } 
+      }
+  
 }
+
+
 return false;
 }
 int main(){
@@ -257,7 +296,23 @@ CantidadPersonas(PersonasCanti);//ALMACENA LA CANTIDAD PERSONAS
 Personas = CargarElementos();
 LLenarId(Personas,PersonasCanti);
 ImprimirLista(Personas,PersonasCanti);
-cout<<EsCambiaFormas(Personas[0],Personas[2]);
-return 0;
+cout<<EsCambiaFormas(Personas[0],Personas[1]);
+
+//declaramos punteros dobles
+// Persona ** MATRIZ = new Persona*[PersonasCanti];
+
+// //asiganamos memoria a las filas
+//   for (int i = 0; i < PersonasCanti; i++) {
+//     MATRIZ[i] = new Persona[PersonasCanti];
+//   }
+// //MATRIZ N*2
+// //cargamos los primeros elementos a la matriz
+
+
+
+
+//   delete[] MATRIZ;     // Liberar la memoria del array de punteros a filas
+  // MATRIZ = nullptr;    // Buena práctica: asignar nullptr para evitar punteros colgantes
+return 0; 
 }
  
