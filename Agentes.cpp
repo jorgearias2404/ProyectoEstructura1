@@ -44,6 +44,7 @@ struct Persona
 };
 
 
+
 ifstream Archivo;
 
 //estas funciones solo aseguran que los valores proporcionados estan en los intervalos correspondientes
@@ -213,6 +214,10 @@ bool ProfundidadOjosSospechosa(Persona Base,Persona Clon){
        {
         return true;
        }
+       if (Base.Mi_Rostro.Profundidad_Ojos==Clon.Mi_Rostro.Profundidad_Ojos)
+       {
+        return false;
+       }
      
      return false;
 }
@@ -289,30 +294,110 @@ if (Clon.Magia!=true&&Base.Magia!=true)
 
 return false;
 }
+
+Persona Clonar(Persona B){
+    Persona A;
+    A.Guardado=B.Guardado;
+    A.Id=B.Id;
+    A.Nombre = B.Nombre;
+    A.Especie=B.Especie;
+    A.Altura=B.Altura;
+    A.Magia=B.Magia;
+    A.Mi_Rostro.Profundidad_Ojos=B.Mi_Rostro.Profundidad_Ojos;
+    A.Mi_Rostro.Distancia_Ojos=B.Mi_Rostro.Distancia_Ojos;
+    A.Mi_Rostro.Distancia_Frente_Nariz=B.Mi_Rostro.Distancia_Ojos;
+    A.Mi_Rostro.Distancia_Nariz_Labio=B.Mi_Rostro.Distancia_Nariz_Labio;
+    return A;
+}
+
+Persona* CargarRelaciones(Persona* Arreglo, int Tamanio, Persona Origen, int &CantidadDeRelaciones, bool &PoseeRelaciones) {
+    // Primero, contamos cuántas relaciones hay
+    int contador = 0;
+    for (int i = 0; i < Tamanio; i++) {
+        if (Origen.Id != Arreglo[i].Id && EsCambiaFormas(Origen, Arreglo[i])) {
+            contador++;
+        }
+    }
+
+    // Si no hay relaciones, devolvemos nullptr
+    if (contador == 0) {
+        PoseeRelaciones = false;
+        return nullptr;
+    }
+
+    // Asignamos memoria dinámica para almacenar las relaciones
+    Persona* Relaciones = new Persona[contador];
+    CantidadDeRelaciones = 0;
+
+    // Llenamos el arreglo con las relaciones
+    for (int i = 0; i < Tamanio; i++) {
+        if (Origen.Id != Arreglo[i].Id && EsCambiaFormas(Origen, Arreglo[i])) {
+           Arreglo[i].Guardado=true;
+            Relaciones[CantidadDeRelaciones] = Clonar(Arreglo[i]);
+            CantidadDeRelaciones++;
+        }
+    }
+
+    PoseeRelaciones = true;
+    return Relaciones;
+}
+
+
+class Sospechoso
+{ 
+public:
+ int CantidadDeRelaciones;
+ Persona Origen;
+ Persona* Relaciones;
+ bool PoseeRelaciones;
+  
+  Sospechoso(){
+    CantidadDeRelaciones=0;
+    PoseeRelaciones=false;
+    Relaciones=nullptr;
+  }
+
+  void ImprimirLista(){
+     cout<<"Cambia formas Original: "<<Origen.Nombre<<endl;
+
+  for (int i = 0; i < CantidadDeRelaciones; i++)
+  {
+    cout<<"--------------"<<endl;
+    cout<<"Persona "<<Relaciones[i].Id<<endl;
+    cout<<"Nombre: "<<Relaciones[i].Nombre<<endl;
+    cout<<"Especie: "<<Relaciones[i].Especie<<endl;
+    cout<<"Altura: "<<Relaciones[i].Altura<<endl;
+    cout<<"Magia: "<<Relaciones[i].Magia<<endl;
+    cout<<"Profundidad ojos: "<<Relaciones[i].Mi_Rostro.Profundidad_Ojos<<endl;
+    cout<<"Distancia ojos: "<<Relaciones[i].Mi_Rostro.Distancia_Ojos<<endl;
+    cout<<"Distancia frente nariz: "<<Relaciones[i].Mi_Rostro.Distancia_Frente_Nariz<<endl;
+    cout<<"Distancia nariz labio: "<<Relaciones[i].Mi_Rostro.Distancia_Nariz_Labio<<endl;
+ 
+  }
+  
+
+}
+
+};
+
+
+
 int main(){
 int PersonasCanti;
 Persona *Personas;
 CantidadPersonas(PersonasCanti);//ALMACENA LA CANTIDAD PERSONAS 
 Personas = CargarElementos();
 LLenarId(Personas,PersonasCanti);
-ImprimirLista(Personas,PersonasCanti);
-cout<<EsCambiaFormas(Personas[0],Personas[1]);
-
-//declaramos punteros dobles
-// Persona ** MATRIZ = new Persona*[PersonasCanti];
-
-// //asiganamos memoria a las filas
-//   for (int i = 0; i < PersonasCanti; i++) {
-//     MATRIZ[i] = new Persona[PersonasCanti];
-//   }
-// //MATRIZ N*2
-// //cargamos los primeros elementos a la matriz
+// ImprimirLista(Personas,PersonasCanti);
+// cout<<EsCambiaFormas(Personas[0],Personas[4]);
 
 
+//SE INICIA COMPROVACION PARA EL SISTEMA DE CARGAS DE LOS CAMBIA FORMAS
+Sospechoso Persona;
+Persona.Origen = Personas[0];
+Persona.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona.Origen,Persona.CantidadDeRelaciones,Persona.PoseeRelaciones);
+Persona.ImprimirLista();
 
-
-//   delete[] MATRIZ;     // Liberar la memoria del array de punteros a filas
-  // MATRIZ = nullptr;    // Buena práctica: asignar nullptr para evitar punteros colgantes
 return 0; 
 }
  

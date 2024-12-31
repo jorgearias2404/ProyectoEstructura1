@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "fstream": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "new": "cpp",
+        "ostream": "cpp"
     }
 }
