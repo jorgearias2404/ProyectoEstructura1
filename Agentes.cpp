@@ -477,6 +477,91 @@ bool ContenidoEn(Sospechoso A, Sospechoso B) {
     return true; // Si todas las relaciones de A están en B, retornar true
 }
 
+//PROBAR
+bool ExisteAlMenosUnoEnOtro(Sospechoso A, Sospechoso B){
+
+//VALIDAMOS SI EL ORIGEN ESTA CONTEDNIDO EN ELOTRO ARREGLO
+if (A.CantidadDeRelaciones<B.CantidadDeRelaciones)
+{
+       for (int i = 0; i < B.CantidadDeRelaciones; i++)
+                  {
+                    if (A.Origen.Id == B.Relaciones[i].Id)
+                    {
+                      return true;
+                    }
+                  }
+
+
+       for (int i = 0; i < A.CantidadDeRelaciones; i++)
+       {
+        for (int j = 0; i < B.CantidadDeRelaciones; i++)
+        {
+          if (A.Relaciones[i].Id == B.Relaciones[j].Id )
+          {
+            return true;
+          }
+        }
+        
+       }
+                  
+   
+} else {
+
+        for (int i = 0; i < A.CantidadDeRelaciones; i++)
+                  {
+                    if (B.Origen.Id == A.Relaciones[i].Id)
+                    {
+                      return true;
+                    }
+                  }
+    
+        for (int i = 0; i < B.CantidadDeRelaciones; i++)
+       {
+        for (int j = 0; i < A.CantidadDeRelaciones; i++)
+        {
+          if (B.Relaciones[i].Id == A.Relaciones[j].Id )
+          {
+            return true;
+          }
+        }
+        
+       }
+                  
+}
+ return false;
+}
+
+
+void OrdenarRelaciones(Sospechoso& BASE) {
+
+  for (int i = 0; i < BASE.CantidadDeRelaciones; i++)
+  {
+    if (BASE.Origen.Mi_Rostro.Profundidad_Ojos>BASE.Relaciones[i].Mi_Rostro.Profundidad_Ojos)
+    {
+        Persona temp = BASE.Origen;
+            BASE.Origen = BASE.Relaciones[i];
+            BASE.Relaciones[i] = temp;
+    }
+    
+  }
+  
+    for (int i = 0; i < BASE.CantidadDeRelaciones - 1; i++) {
+        int indiceMenor = i;
+        for (int j = i + 1; j < BASE.CantidadDeRelaciones; j++) {
+            if (BASE.Relaciones[j].Mi_Rostro.Profundidad_Ojos < BASE.Relaciones[indiceMenor].Mi_Rostro.Profundidad_Ojos) {
+                indiceMenor = j;
+            }
+        }
+        // Intercambiar las relaciones
+        if (indiceMenor != i) {
+            Persona temp = BASE.Relaciones[i];
+            BASE.Relaciones[i] = BASE.Relaciones[indiceMenor];
+            BASE.Relaciones[indiceMenor] = temp;
+        }
+    }
+}
+
+
 int main(){
 
 int PersonasCanti;
@@ -491,11 +576,13 @@ LLenarId(Personas,PersonasCanti);
 //SE INICIA COMPROVACION PARA EL SISTEMA DE CARGAS DE LOS CAMBIA FORMAS
 Sospechoso Persona,Persona2;
 Persona.Origen = Personas[0];
-Persona2.Origen = Personas[2];
+Persona2.Origen = Personas[1];
 
 Persona.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona.Origen,Persona.CantidadDeRelaciones,Persona.PoseeRelaciones);
 Persona2.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona2.Origen,Persona2.CantidadDeRelaciones,Persona2.PoseeRelaciones);
 
+OrdenarRelaciones(Persona);
+OrdenarRelaciones(Persona2);
 
 Persona.ImprimirLista();
 cout<<"==///==///==///==///==///==///==///==///==///"<<endl;
