@@ -43,8 +43,6 @@ struct Persona
  }
 };
 
-
-
 ifstream Archivo;
 
 //estas funciones solo aseguran que los valores proporcionados estan en los intervalos correspondientes
@@ -296,18 +294,18 @@ return false;
 }
 
 Persona Clonar(Persona B){
-    Persona A;
-    A.Guardado=B.Guardado;
-    A.Id=B.Id;
+     Persona A;
+    A.Guardado = B.Guardado;
+    A.Id = B.Id; // Asegúrate de copiar el Id
     A.Nombre = B.Nombre;
-    A.Especie=B.Especie;
-    A.Altura=B.Altura;
-    A.Magia=B.Magia;
-    A.Mi_Rostro.Profundidad_Ojos=B.Mi_Rostro.Profundidad_Ojos;
-    A.Mi_Rostro.Distancia_Ojos=B.Mi_Rostro.Distancia_Ojos;
-    A.Mi_Rostro.Distancia_Frente_Nariz=B.Mi_Rostro.Distancia_Ojos;
-    A.Mi_Rostro.Distancia_Nariz_Labio=B.Mi_Rostro.Distancia_Nariz_Labio;
-    return A;
+    A.Especie = B.Especie;
+    A.Altura = B.Altura;
+    A.Magia = B.Magia;
+    A.Mi_Rostro.Profundidad_Ojos = B.Mi_Rostro.Profundidad_Ojos;
+    A.Mi_Rostro.Distancia_Ojos = B.Mi_Rostro.Distancia_Ojos;
+    A.Mi_Rostro.Distancia_Frente_Nariz = B.Mi_Rostro.Distancia_Frente_Nariz; // Corregir este campo
+    A.Mi_Rostro.Distancia_Nariz_Labio = B.Mi_Rostro.Distancia_Nariz_Labio;
+     return A;
 }
 
 Persona* CargarRelaciones(Persona* Arreglo, int Tamanio, Persona Origen, int &CantidadDeRelaciones, bool &PoseeRelaciones) {
@@ -332,13 +330,14 @@ Persona* CargarRelaciones(Persona* Arreglo, int Tamanio, Persona Origen, int &Ca
     // Llenamos el arreglo con las relaciones
     for (int i = 0; i < Tamanio; i++) {
         if (Origen.Id != Arreglo[i].Id && EsCambiaFormas(Origen, Arreglo[i])) {
-           Arreglo[i].Guardado=true;
             Relaciones[CantidadDeRelaciones] = Clonar(Arreglo[i]);
             CantidadDeRelaciones++;
         }
     }
 
     PoseeRelaciones = true;
+
+    
     return Relaciones;
 }
 
@@ -358,31 +357,128 @@ public:
   }
 
   void ImprimirLista(){
-     cout<<"Cambia formas Original: "<<Origen.Nombre<<endl;
+
+if (CantidadDeRelaciones>0)
+{
+  cout<<"Cambia formas Original: "<<Origen.Nombre<<endl;
+}
+else{
+    cout<<"Persona Sospechosa: "<<Origen.Nombre<<endl;
+}
+
+    
+     
 
   for (int i = 0; i < CantidadDeRelaciones; i++)
   {
     cout<<"--------------"<<endl;
     cout<<"Persona "<<Relaciones[i].Id<<endl;
     cout<<"Nombre: "<<Relaciones[i].Nombre<<endl;
-    cout<<"Especie: "<<Relaciones[i].Especie<<endl;
-    cout<<"Altura: "<<Relaciones[i].Altura<<endl;
-    cout<<"Magia: "<<Relaciones[i].Magia<<endl;
-    cout<<"Profundidad ojos: "<<Relaciones[i].Mi_Rostro.Profundidad_Ojos<<endl;
-    cout<<"Distancia ojos: "<<Relaciones[i].Mi_Rostro.Distancia_Ojos<<endl;
-    cout<<"Distancia frente nariz: "<<Relaciones[i].Mi_Rostro.Distancia_Frente_Nariz<<endl;
-    cout<<"Distancia nariz labio: "<<Relaciones[i].Mi_Rostro.Distancia_Nariz_Labio<<endl;
- 
   }
   
 
 }
-
+  
 };
 
+//TERMINAR FUNCION DE CONTENCION
+bool ContenidoEn(Sospechoso A, Sospechoso B) {
+ 
+       if (A.CantidadDeRelaciones<B.CantidadDeRelaciones)
+       {  
 
+         bool OrigenEnArreglo =false;
+
+                  for (int i = 0; i < B.CantidadDeRelaciones; i++)
+                  {
+                    if (A.Origen.Id == B.Relaciones[i].Id)
+                    {
+                      OrigenEnArreglo = true;
+                    }
+                  }
+
+                  if (OrigenEnArreglo==true && A.CantidadDeRelaciones==0)
+                  {
+                    return true;
+                  }
+                  
+                  if ( OrigenEnArreglo == false)
+                  {
+                      return false;
+                  }
+                  
+
+          for (int i = 0; i < A.CantidadDeRelaciones; i++)
+              {
+                bool Encontrado =false;
+                for (int j = 0; j < B.CantidadDeRelaciones; j++)
+                {
+                
+                  
+                  if (A.Relaciones[i].Id == B.Relaciones[j].Id)
+                  {
+                    Encontrado =true;
+                  }
+                  
+                }
+                if (Encontrado ==false)
+                {
+                  return false;
+                }
+                
+                
+              }
+        }
+        else{
+        bool OrigenEnArreglo =false;
+
+            for (int i = 0; i < A.CantidadDeRelaciones; i++)
+                  {
+                    if (B.Origen.Id == A.Relaciones[i].Id)
+                    {
+                      OrigenEnArreglo = true;
+                    }
+                  }
+
+                  if (OrigenEnArreglo==true && B.CantidadDeRelaciones==0)
+                  {
+                    return true;
+                  }
+                  
+                  if ( OrigenEnArreglo == false)
+                  {
+                      return false;
+                  }
+           
+           for (int i = 0; i < B .CantidadDeRelaciones; i++)
+              {
+                bool Encontrado =false;
+                for (int j = 0; j < A.CantidadDeRelaciones; j++)
+                {
+              
+                  
+                  if (B.Relaciones[i].Id == A.Relaciones[j].Id)
+                  {
+                    Encontrado =true;
+                  }
+                  
+                }
+                if (Encontrado ==false)
+                {
+                  return false;
+                }
+                
+                
+              }
+        }
+      
+       
+       
+    return true; // Si todas las relaciones de A están en B, retornar true
+}
 
 int main(){
+
 int PersonasCanti;
 Persona *Personas;
 CantidadPersonas(PersonasCanti);//ALMACENA LA CANTIDAD PERSONAS 
@@ -393,10 +489,23 @@ LLenarId(Personas,PersonasCanti);
 
 
 //SE INICIA COMPROVACION PARA EL SISTEMA DE CARGAS DE LOS CAMBIA FORMAS
-Sospechoso Persona;
+Sospechoso Persona,Persona2;
 Persona.Origen = Personas[0];
+Persona2.Origen = Personas[2];
+
 Persona.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona.Origen,Persona.CantidadDeRelaciones,Persona.PoseeRelaciones);
+Persona2.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona2.Origen,Persona2.CantidadDeRelaciones,Persona2.PoseeRelaciones);
+
+
 Persona.ImprimirLista();
+cout<<"==///==///==///==///==///==///==///==///==///"<<endl;
+Persona2.ImprimirLista();
+cout<<"==///==///==///==///==///==///==///==///==///"<<endl;
+cout<<endl;
+cout<<ContenidoEn(Persona2,Persona);
+//implementar funcion recursiva para determinara cuantos cambia formas
+
+
 
 return 0; 
 }
