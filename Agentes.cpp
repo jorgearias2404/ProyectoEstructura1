@@ -561,7 +561,76 @@ void OrdenarRelaciones(Sospechoso& BASE) {
     }
 }
 
+void ImprimirSospechosos(Sospechoso *Arreglo,int Tamanio){
+  for (int i = 0; i < Tamanio; i++)
+  {
+    Arreglo[i].ImprimirLista();
+    cout<<"---------- "<< i <<"  --------"<<endl;
+  }
+  
+}
+//ARREGLAR ESTA FUNCION
+Sospechoso * LLenarSospechosos(Persona *Lista,int CantidadPersonas){
+  Sospechoso* Relaciones = new Sospechoso[CantidadPersonas];
+  for (int i = 0; i < CantidadPersonas; i++)
+  {
+    cout<<"Cargandose"<<endl;
+    Sospechoso P;
+    P.Origen = Lista[i];
+    P.Relaciones = CargarRelaciones(Lista,CantidadPersonas,P.Origen,P.CantidadDeRelaciones,P.PoseeRelaciones);
+    
+    Relaciones[i] = P;
+  }
+  return Relaciones;
+  
+}
+//LUEGO DE ARREGLAR LA FUNCION DE ARRIBA BUSCAR PROBAR ESTA
+int NumeroDeCambiaFormas(Sospechoso *Arreglo,int CantidadPersonas){
+ int CantidadCambiaFormas = 0;
 
+
+
+for (int i = 0; i < CantidadPersonas; i++)//CONTROLA LAS PERSONA BASE
+{
+  for (int j = 0; j < CantidadPersonas; j++)//CONTROLA PERSONAS PARA COMPARAR
+  {
+    if (Arreglo[i].CantidadDeRelaciones > Arreglo[j].CantidadDeRelaciones)//CONTROLA
+    {
+        for (int q = 0; q < Arreglo[i].CantidadDeRelaciones; q++)//MANEJA LOS ARREGLOS DE LA PERSONA BASE
+        {
+          for (int z = 0; z < Arreglo[j].CantidadDeRelaciones; z++)//MANEJA LOS ARREGLOS DE LA PERSON EJEMPLO
+          {
+            if ((ContenidoEn(Arreglo[i],Arreglo[j])||ExisteAlMenosUnoEnOtro(Arreglo[i],Arreglo[j]))==false)
+            {
+              CantidadCambiaFormas++;
+            }
+            
+          }
+          
+        }
+    }
+    else {
+        
+               for (int q = 0; q < Arreglo[j].CantidadDeRelaciones; q++)//MANEJA LOS ARREGLOS DE LA PERSONA BASE
+                {
+                  for (int z = 0; z < Arreglo[i].CantidadDeRelaciones; z++)//MANEJA LOS ARREGLOS DE LA PERSON EJEMPLO
+                  {
+                     CantidadCambiaFormas++;
+                  }
+                  
+                }
+
+    }
+    
+
+   
+    
+  }
+  
+}
+return CantidadCambiaFormas;
+
+}
 int main(){
 
 int PersonasCanti;
@@ -574,22 +643,25 @@ LLenarId(Personas,PersonasCanti);
 
 
 //SE INICIA COMPROVACION PARA EL SISTEMA DE CARGAS DE LOS CAMBIA FORMAS
-Sospechoso Persona,Persona2;
-Persona.Origen = Personas[0];
-Persona2.Origen = Personas[1];
+ Sospechoso Persona,Persona2;
+ Persona.Origen = Personas[0];
+ Persona2.Origen = Personas[3];
 
-Persona.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona.Origen,Persona.CantidadDeRelaciones,Persona.PoseeRelaciones);
-Persona2.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona2.Origen,Persona2.CantidadDeRelaciones,Persona2.PoseeRelaciones);
+ Persona.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona.Origen,Persona.CantidadDeRelaciones,Persona.PoseeRelaciones);
+ Persona2.Relaciones = CargarRelaciones(Personas,PersonasCanti,Persona2.Origen,Persona2.CantidadDeRelaciones,Persona2.PoseeRelaciones);
 
-OrdenarRelaciones(Persona);
-OrdenarRelaciones(Persona2);
+ OrdenarRelaciones(Persona);
+ OrdenarRelaciones(Persona2);
 
-Persona.ImprimirLista();
-cout<<"==///==///==///==///==///==///==///==///==///"<<endl;
-Persona2.ImprimirLista();
-cout<<"==///==///==///==///==///==///==///==///==///"<<endl;
+ Persona.ImprimirLista();
+ cout<<"==///==///==///==///==///==///==///==///==///"<<endl;
+ Persona2.ImprimirLista();
+ cout<<"==///==///==///==///==///==///==///==///==///"<<endl;
 cout<<endl;
-cout<<ContenidoEn(Persona2,Persona);
+cout<<ContenidoEn(Persona2,Persona)<<endl;
+cout<<ExisteAlMenosUnoEnOtro(Persona,Persona2)<<endl;
+
+
 //implementar funcion recursiva para determinara cuantos cambia formas
 
 
