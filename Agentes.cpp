@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 
+
 using namespace std;
 
 
@@ -109,48 +110,7 @@ void CantidadPersonas(int& numero){
 Archivo.close();
 }
 
-Persona* CargarElementos() {
-    Archivo.open("dataBase.in", ios::in);
-    if (Archivo.fail()) {
-        cout << "Error al abrir el archivo" << endl;
-        return nullptr;
-    }
 
-    string linea;
-    getline(Archivo, linea);
-    int cantidadPersonas = stoi(linea);
-    Persona* personas = new Persona[cantidadPersonas];
-
-    for (int i = 0; i < cantidadPersonas; i++) {
-        Persona p;
-        p.Id = i;
-        getline(Archivo, p.Nombre);
-        getline(Archivo, p.Especie);
-
-        getline(Archivo, linea);
-        p.Altura = stof(linea);
-
-        getline(Archivo, linea);
-        p.Magia = (linea == "Si" || linea == "si" || linea == "SI");
-
-        getline(Archivo, linea);
-        p.Mi_Rostro.Profundidad_Ojos = stof(linea);
-
-        getline(Archivo, linea);
-        p.Mi_Rostro.Distancia_Ojos = stof(linea);
-
-        getline(Archivo, linea);
-        p.Mi_Rostro.Distancia_Frente_Nariz = stof(linea);
-
-        getline(Archivo, linea);
-        p.Mi_Rostro.Distancia_Nariz_Labio = stof(linea);
-
-        personas[i] = p;
-    }
-
-    Archivo.close();
-    return personas;
-}
 
 
 void ImprimirLista(Persona *Personas,int N){
@@ -297,38 +257,6 @@ Persona Clonar(Persona B){
      return A;
 }
 
-Persona* CargarRelaciones(Persona* Arreglo, int Tamanio, Persona Origen, int &CantidadDeRelaciones, bool &PoseeRelaciones) {
-    // Primero, contamos cuántas relaciones hay
-    int contador = 0;
-    for (int i = 0; i < Tamanio; i++) {
-        if (Origen.Id != Arreglo[i].Id && EsCambiaFormas(Origen, Arreglo[i])) {
-            contador++;
-        }
-    }
-
-    // Si no hay relaciones, devolvemos nullptr
-    if (contador == 0) {
-        PoseeRelaciones = false;
-        return nullptr;
-    }
-
-    // Asignamos memoria dinámica para almacenar las relaciones
-    Persona* Relaciones = new Persona[contador];
-    CantidadDeRelaciones = 0;
-
-    // Llenamos el arreglo con las relaciones
-    for (int i = 0; i < Tamanio; i++) {
-        if (Origen.Id != Arreglo[i].Id && EsCambiaFormas(Origen, Arreglo[i])) {
-            Relaciones[CantidadDeRelaciones] = Clonar(Arreglo[i]);
-            CantidadDeRelaciones++;
-        }
-    }
-
-    PoseeRelaciones = true;
-
-    
-    return Relaciones;
-}
 
 
 class Sospechoso
@@ -382,6 +310,40 @@ public:
   
 };
 
+
+
+Persona* CargarRelaciones(  Persona Origen, Sospechoso* Arreglo, int Tamanio, int &CantidadDeRelaciones, bool &PoseeRelaciones) {
+    // Primero, contamos cuántas relaciones hay
+    int contador = 0;
+    for (int i = 0; i < Tamanio; i++) {
+        if (Origen.Id != Arreglo[i].Origen.Id && EsCambiaFormas(Origen, Arreglo[i].Origen)) {
+            contador++;
+        }
+    }
+
+    // Si no hay relaciones, devolvemos nullptr
+    if (contador == 0) {
+        PoseeRelaciones = false;
+        return nullptr;
+    }
+
+    // Asignamos memoria dinámica para almacenar las relaciones
+    Persona* Relaciones = new Persona[contador];
+    CantidadDeRelaciones = 0;
+
+    // Llenamos el arreglo con las relaciones
+    for (int i = 0; i < Tamanio; i++) {
+        if (Origen.Id != Arreglo[i].Origen.Id && EsCambiaFormas(Origen, Arreglo[i].Origen)) {
+            Relaciones[CantidadDeRelaciones] = Arreglo[i].Origen;
+            CantidadDeRelaciones++;
+        }
+    }
+
+    PoseeRelaciones = true;
+
+    
+    return Relaciones;
+}
 
 
 void CorregirErrorDeCarga(Persona* Arreglo, int Tamanio, Sospechoso& Sospechoso) {
@@ -579,31 +541,26 @@ void OrdenarRelaciones(Sospechoso& BASE) {
     }
 }
 
-void ImprimirSospechosos(Sospechoso *Arreglo,int Tamanio){
+void ImprimirSospechosos(Sospechoso *Personas,int Tamanio){
   for (int i = 0; i < Tamanio; i++)
   {
-    Arreglo[i].ImprimirLista();
+     cout<<"--------------"<<endl;
+    cout<<"Persona "<<Personas[i].Origen.Id<<endl;
+    cout<<"Nombre: "<<Personas[i].Origen.Nombre<<endl;
+    cout<<"Especie: "<<Personas[i].Origen.Especie<<endl;
+    cout<<"Altura: "<<Personas[i].Origen.Altura<<endl;
+    cout<<"Magia: "<<Personas[i].Origen.Magia<<endl;
+    cout<<"Profundidad ojos: "<<Personas[i].Origen.Mi_Rostro.Profundidad_Ojos<<endl;
+    cout<<"Distancia ojos: "<<Personas[i].Origen.Mi_Rostro.Distancia_Ojos<<endl;
+    cout<<"Distancia frente nariz: "<<Personas[i].Origen.Mi_Rostro.Distancia_Frente_Nariz<<endl;
+    cout<<"Distancia nariz labio: "<<Personas[i].Origen.Mi_Rostro.Distancia_Nariz_Labio<<endl;
+
     cout<<"---------- "<< i <<"  --------"<<endl;
   }
   
 }
 
-Sospechoso* cargarSospechosos(Persona* Personas, int PersonasCanti) {
-    // Crear un arreglo de Sospechoso con el tamaño de PersonasCanti
-    Sospechoso* ArregloSospechosos = new Sospechoso[PersonasCanti];
-    
 
-    // Recorrer todas las personas para cargar sus relaciones
-    for (int i = 0; i < PersonasCanti; i++) {
-        Sospechoso sospechoso;
-        sospechoso.Origen = Personas[i]; // Asignar la persona como origen
-        sospechoso.Relaciones = CargarRelaciones(Personas, PersonasCanti, sospechoso.Origen, sospechoso.CantidadDeRelaciones, sospechoso.PoseeRelaciones);  
-        ArregloSospechosos[i] = sospechoso;
-      
-    }
-
-    return ArregloSospechosos;
-}
 //LUEGO DE ARREGLAR LA FUNCION DE ARRIBA BUSCAR PROBAR ESTA
 int NumeroDeCambiaFormas(Sospechoso *Arreglo,int CantidadPersonas){
  int CantidadCambiaFormas = 0;
@@ -651,28 +608,68 @@ for (int i = 0; i < CantidadPersonas; i++)//CONTROLA LAS PERSONA BASE
 return CantidadCambiaFormas;
 
 }
+
+Sospechoso* CargarElementos() {
+    Archivo.open("dataBase.in", ios::in);
+    if (Archivo.fail()) {
+        cout << "Error al abrir el archivo" << endl;
+        return nullptr;
+    }
+
+    string linea;
+    getline(Archivo, linea);
+    int cantidadPersonas = stoi(linea);
+    Sospechoso* personas = new Sospechoso[cantidadPersonas];
+
+    for (int i = 0; i < cantidadPersonas; i++) {
+        Sospechoso p;
+        p.Origen.Id = i;
+        getline(Archivo, p.Origen.Nombre);
+        getline(Archivo, p.Origen.Especie );
+
+        getline(Archivo, linea);
+        p.Origen.Altura = stof(linea);
+
+        getline(Archivo, linea);
+        p.Origen.Magia = (linea == "Si" || linea == "si" || linea == "SI");
+
+        getline(Archivo, linea);
+        p.Origen.Mi_Rostro.Profundidad_Ojos = stof(linea);
+
+        getline(Archivo, linea);
+        p.Origen.Mi_Rostro.Distancia_Ojos = stof(linea);
+
+        getline(Archivo, linea);
+        p.Origen.Mi_Rostro.Distancia_Frente_Nariz = stof(linea);
+
+        getline(Archivo, linea);
+        p.Origen.Mi_Rostro.Distancia_Nariz_Labio = stof(linea);
+
+        personas[i] = p;
+    }
+
+    Archivo.close();
+    return personas;
+}
+
 int main(){
 
 int PersonasCanti;
-    Persona* Personas;
+    Sospechoso* Personas;
     CantidadPersonas(PersonasCanti);
     Personas = CargarElementos();
     if (Personas == nullptr) {
         return 1; // Manejo de error si no se cargan personas
     }
-
-Sospechoso *Arreglo = cargarSospechosos( Personas, PersonasCanti);
-
-for (int i = 0; i < PersonasCanti; i++)//ordenamos y cargamos la informacion en arreglos de sospechosos
-{
-   CorregirErrorDeCarga(Personas,PersonasCanti,Arreglo[i]);
-   OrdenarRelaciones(Arreglo[i]);
-   Arreglo[i].ImprimirLista();//temporal
-}
+    for (int i = 0; i < PersonasCanti; i++)
+    {
+      Personas[i].Relaciones = CargarRelaciones(Personas[i].Origen,Personas,PersonasCanti,Personas[i].CantidadDeRelaciones,Personas[i].PoseeRelaciones);
+      Personas[i].ImprimirLista();
+    }
 
 
 
-delete[] Arreglo;
+
 delete[] Personas;
 return 0; 
 }
