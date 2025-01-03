@@ -587,7 +587,7 @@ void ImprimirSospechosos(Sospechoso *Arreglo,int Tamanio){
   }
   
 }
-//ARREGLAR ESTA FUNCION
+
 Sospechoso* cargarSospechosos(Persona* Personas, int PersonasCanti) {
     // Crear un arreglo de Sospechoso con el tamaño de PersonasCanti
     Sospechoso* ArregloSospechosos = new Sospechoso[PersonasCanti];
@@ -665,7 +665,7 @@ Sospechoso *Arreglo = cargarSospechosos( Personas, PersonasCanti);
 
 for (int i = 0; i < PersonasCanti; i++)//ordenamos y cargamos la informacion en arreglos de sospechosos
 {
-  CorregirErrorDeCarga(Personas,PersonasCanti,Arreglo[i]);
+   CorregirErrorDeCarga(Personas,PersonasCanti,Arreglo[i]);
    OrdenarRelaciones(Arreglo[i]);
    Arreglo[i].ImprimirLista();//temporal
 }
