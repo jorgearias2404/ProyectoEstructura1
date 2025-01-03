@@ -562,8 +562,8 @@ void ImprimirSospechosos(Sospechoso *Personas,int Tamanio){
 
 
 //LUEGO DE ARREGLAR LA FUNCION DE ARRIBA BUSCAR PROBAR ESTA
-int NumeroDeCambiaFormas(Sospechoso *Arreglo,int CantidadPersonas){
- int CantidadCambiaFormas = 0;
+int NumeroDeCambiaFormas(Sospechoso *Arreglo, int CantidadPersonas) {
+    int CantidadCambiaFormas = 0;
 
 
 
