@@ -605,51 +605,32 @@ Sospechoso* cargarSospechosos(Persona* Personas, int PersonasCanti) {
     return ArregloSospechosos;
 }
 //LUEGO DE ARREGLAR LA FUNCION DE ARRIBA BUSCAR PROBAR ESTA
-int NumeroDeCambiaFormas(Sospechoso *Arreglo,int CantidadPersonas){
- int CantidadCambiaFormas = 0;
+int NumeroDeCambiaFormas(Sospechoso *Arreglo, int CantidadPersonas) {
+    int CantidadCambiaFormas = 0;
 
+    // Recorremos cada sospechoso en el arreglo
+    for (int i = 0; i < CantidadPersonas; i++) {
+        bool tieneRelacion = false;
 
+        // Comparamos con todos los demás sospechosos
+        for (int j = 0; j < CantidadPersonas; j++) {
+            if (i == j) continue; // No comparar consigo mismo
 
-for (int i = 0; i < CantidadPersonas; i++)//CONTROLA LAS PERSONA BASE
-{
-  for (int j = 0; j < CantidadPersonas; j++)//CONTROLA PERSONAS PARA COMPARAR
-  {
-    if (Arreglo[i].CantidadDeRelaciones > Arreglo[j].CantidadDeRelaciones)//CONTROLA
-    {
-        for (int q = 0; q < Arreglo[i].CantidadDeRelaciones; q++)//MANEJA LOS ARREGLOS DE LA PERSONA BASE
-        {
-          for (int z = 0; z < Arreglo[j].CantidadDeRelaciones; z++)//MANEJA LOS ARREGLOS DE LA PERSON EJEMPLO
-          {
-            if ((ContenidoEn(Arreglo[i],Arreglo[j])||ExisteAlMenosUnoEnOtro(Arreglo[i],Arreglo[j]))==false)
-            {
-              CantidadCambiaFormas++;
+            // Verificamos si las relaciones de Arreglo[i] están contenidas en Arreglo[j]
+            // o si al menos una relación existe en Arreglo[j]
+            if (ContenidoEn(Arreglo[i], Arreglo[j]) || ExisteAlMenosUnoEnOtro(Arreglo[i], Arreglo[j])) {
+                tieneRelacion = true;
+                break; // Si tiene relación, salimos del bucle interno
             }
-            
-          }
-          
+        }
+
+        // Si no tiene relación con ningún otro sospechoso, incrementamos el contador
+        if (tieneRelacion==false) {
+            CantidadCambiaFormas++;
         }
     }
-    else {
-        
-               for (int q = 0; q < Arreglo[j].CantidadDeRelaciones; q++)//MANEJA LOS ARREGLOS DE LA PERSONA BASE
-                {
-                  for (int z = 0; z < Arreglo[i].CantidadDeRelaciones; z++)//MANEJA LOS ARREGLOS DE LA PERSON EJEMPLO
-                  {
-                     CantidadCambiaFormas++;
-                  }
-                  
-                }
 
-    }
-    
-
-   
-    
-  }
-  
-}
-return CantidadCambiaFormas;
-
+    return CantidadCambiaFormas;
 }
 int main(){
 
@@ -671,7 +652,7 @@ for (int i = 0; i < PersonasCanti; i++)//ordenamos y cargamos la informacion en 
 }
 
 
-
+cout<<"Numero de cambia formas: "<<NumeroDeCambiaFormas(Arreglo,PersonasCanti)<<endl;
 delete[] Arreglo;
 delete[] Personas;
 return 0; 
