@@ -364,52 +364,7 @@ void CorregirErrorDeCarga(Persona* Arreglo, int Tamanio, Sospechoso& Sospechoso)
 //TERMINAR FUNCION DE CONTENCION
 bool ContenidoEn(Sospechoso A, Sospechoso B) {
  
-       if (A.CantidadDeRelaciones<B.CantidadDeRelaciones)
-       {  
-
-         bool OrigenEnArreglo =false;
-
-                  for (int i = 0; i < B.CantidadDeRelaciones; i++)
-                  {
-                    if (A.Origen.Id == B.Relaciones[i].Id)
-                    {
-                      OrigenEnArreglo = true;
-                    }
-                  }
-
-                  if (OrigenEnArreglo==true && A.CantidadDeRelaciones==0)
-                  {
-                    return true;
-                  }
-                  
-                  if ( OrigenEnArreglo == false)
-                  {
-                      return false;
-                  }
-                  
-
-          for (int i = 0; i < A.CantidadDeRelaciones; i++)
-              {
-                bool Encontrado =false;
-                for (int j = 0; j < B.CantidadDeRelaciones; j++)
-                {
-                
-                  
-                  if (A.Relaciones[i].Id == B.Relaciones[j].Id)
-                  {
-                    Encontrado =true;
-                  }
-                  
-                }
-                if (Encontrado ==false)
-                {
-                  return false;
-                }
-                
-                
-              }
-        }
-        else{
+    
         bool OrigenEnArreglo =false;
 
             for (int i = 0; i < A.CantidadDeRelaciones; i++)
@@ -450,7 +405,7 @@ bool ContenidoEn(Sospechoso A, Sospechoso B) {
                 
                 
               }
-        }
+        
       
        
        
@@ -459,6 +414,32 @@ bool ContenidoEn(Sospechoso A, Sospechoso B) {
 
 //PROBAR
 bool ExisteAlMenosUnoEnOtro(Sospechoso A, Sospechoso B){
+
+
+if (A.CantidadDeRelaciones = 0)
+{
+  for (int i = 0; i < B.CantidadDeRelaciones; i++)
+  {
+    if (A.Origen.Id == B.Relaciones[i].Id)
+    {
+      return true;
+    }
+    
+  }
+  return false;
+}
+if (B.CantidadDeRelaciones = 0)
+{
+  for (int i = 0; i < A.CantidadDeRelaciones; i++)
+  {
+    if (B.Origen.Id == A.Relaciones[i].Id)
+    {
+      return true;
+    }
+    
+  }
+  return false;
+}
 
 //VALIDAMOS SI EL ORIGEN ESTA CONTEDNIDO EN ELOTRO ARREGLO
 if (A.CantidadDeRelaciones<B.CantidadDeRelaciones)
@@ -561,54 +542,32 @@ void ImprimirSospechosos(Sospechoso *Personas,int Tamanio){
 }
 
 
-//LUEGO DE ARREGLAR LA FUNCION DE ARRIBA BUSCAR PROBAR ESTA
-int NumeroDeCambiaFormas(Sospechoso *Arreglo, int CantidadPersonas) {
-    int CantidadCambiaFormas = 0;
 
 
+int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso2) {
+    int cantidadRepetidos = 0;
 
-for (int i = 0; i < CantidadPersonas; i++)//CONTROLA LAS PERSONA BASE
-{
-  for (int j = 0; j < CantidadPersonas; j++)//CONTROLA PERSONAS PARA COMPARAR
-  {
-    if (Arreglo[i].CantidadDeRelaciones > Arreglo[j].CantidadDeRelaciones)//CONTROLA
-    {
-        for (int q = 0; q < Arreglo[i].CantidadDeRelaciones; q++)//MANEJA LOS ARREGLOS DE LA PERSONA BASE
-        {
-          for (int z = 0; z < Arreglo[j].CantidadDeRelaciones; z++)//MANEJA LOS ARREGLOS DE LA PERSON EJEMPLO
-          {
-            if ((ContenidoEn(Arreglo[i],Arreglo[j])||ExisteAlMenosUnoEnOtro(Arreglo[i],Arreglo[j]))==false)
-            {
-              CantidadCambiaFormas++;
-            }
-            
-          }
-          
+
+    // Verificar si el origen de sospechoso2 está en el arreglo de sospechoso1
+    for (int i = 0; i < sospechoso1.CantidadDeRelaciones; i++) {
+        if (sospechoso2.Origen.Id == sospechoso1.Relaciones[i].Id) {
+            cantidadRepetidos++;
+            break;
         }
     }
-    else {
-        
-               for (int q = 0; q < Arreglo[j].CantidadDeRelaciones; q++)//MANEJA LOS ARREGLOS DE LA PERSONA BASE
-                {
-                  for (int z = 0; z < Arreglo[i].CantidadDeRelaciones; z++)//MANEJA LOS ARREGLOS DE LA PERSON EJEMPLO
-                  {
-                     CantidadCambiaFormas++;
-                  }
-                  
-                }
 
+    // Verificar si hay elementos repetidos en los arreglos de ambos sospechosos
+    for (int i = 0; i < sospechoso1.CantidadDeRelaciones; i++) {
+        for (int j = 0; j < sospechoso2.CantidadDeRelaciones; j++) {
+            if (sospechoso1.Relaciones[i].Id == sospechoso2.Relaciones[j].Id) {
+                cantidadRepetidos++;
+                break;
+            }
+        }
     }
-    
 
-   
-    
-  }
-  
+    return cantidadRepetidos;
 }
-return CantidadCambiaFormas;
-
-}
-
 Sospechoso* CargarElementos() {
     Archivo.open("dataBase.in", ios::in);
     if (Archivo.fail()) {
@@ -664,12 +623,212 @@ int PersonasCanti;
     for (int i = 0; i < PersonasCanti; i++)
     {
       Personas[i].Relaciones = CargarRelaciones(Personas[i].Origen,Personas,PersonasCanti,Personas[i].CantidadDeRelaciones,Personas[i].PoseeRelaciones);
-      Personas[i].ImprimirLista();
+      // Personas[i].ImprimirLista();
     }
 
+  //implementando simplificacion AQUI PASAN COSAS LOCAS REQUIERE VALIDACION
+
+  for (int i = 0; i < PersonasCanti ; i++)
+  {
+   for (int j = 1; j < PersonasCanti; j++)
+   {
+      if (ContenidoEn(Personas[i],Personas[j]))
+      {
+        break;
+      }
+      if (!ExisteAlMenosUnoEnOtro(Personas[i],Personas[j]))
+      {
+        break;
+      }
+      // I > J
+      if (Personas[i].CantidadDeRelaciones > Personas[j].CantidadDeRelaciones)
+      { 
+        
+        bool ContenidoEnOtro =false;
+        for (int k = 0; k < Personas[j].CantidadDeRelaciones; k++)
+        {
+          if (Personas[j].Origen.Id == Personas[i].Relaciones[k].Id)
+          {
+            ContenidoEnOtro = true;
+          }
+          
+        }
+        
+        
+        if (ContenidoEnOtro){
+          int tamanio = Personas[i].CantidadDeRelaciones + Personas[j].CantidadDeRelaciones - CantidadDeElementosRepetidos(Personas[i],Personas[j]);
+           Persona *Lista = new Persona[tamanio];
+           int Cargados =0;
+           for (int k = 0; i < Personas[i].CantidadDeRelaciones; k++)
+           {
+            Lista[k] = Personas[i].Relaciones[k];
+            Cargados++;
+           }
+
+           for (int k = 0; k < Personas[j].CantidadDeRelaciones; k++)
+           {
+             bool Duplicado = false;
+               for (int l = 0; l < Cargados; l++){
+                 if (Personas[j].Relaciones[k].Id == Lista[l].Id)
+                 {
+                   Duplicado = true;
+                    break;
+                 }
+               }
+                if (!Duplicado) {
+                    Lista[Cargados] = Personas[j].Relaciones[i];
+                    Cargados++;
+                }
+           }
+           
+           
+           Personas[i].CantidadDeRelaciones = Cargados;
+           delete[] Personas[i].Relaciones;
+           Personas[i].Relaciones = Lista;
+          
+        }
+
+         if (!ContenidoEnOtro){
+          int tamanio = 1 + Personas[i].CantidadDeRelaciones + Personas[j].CantidadDeRelaciones - CantidadDeElementosRepetidos(Personas[i],Personas[j]);
+           Persona *Lista = new Persona[tamanio];
+           int Cargados =0;
+           for (int k = 0; i < Personas[i].CantidadDeRelaciones; k++)
+           {
+            Lista[k] = Personas[i].Relaciones[k];
+            Cargados++;
+           }
+           Lista[Cargados] = Personas[j].Origen;
+           Cargados++;
+
+           for (int k = 0; k < Personas[j].CantidadDeRelaciones; k++)
+           {
+             bool Duplicado = false;
+               for (int l = 0; l < Cargados; l++){
+                 if (Personas[j].Relaciones[k].Id == Lista[l].Id)
+                 {
+                   Duplicado = true;
+                    break;
+                 }
+               }
+                if (!Duplicado) {
+                    Lista[Cargados] = Personas[j].Relaciones[i];
+                       Cargados++;
+                }
+           }
+           
+          Personas[i].CantidadDeRelaciones = Cargados;
+           delete[] Personas[i].Relaciones;
+           Personas[i].Relaciones = Lista;
+          
+           
+        }
+        
+      } else{
+        //J >= I
+        bool ContenidoEnOtro =false;
+          for (int k = 0; k < Personas[i].CantidadDeRelaciones; i++)
+        {
+          if (Personas[i].Origen.Id == Personas[j].Relaciones[k].Id)
+          {
+            ContenidoEnOtro = true;
+          }
+          
+        }
+
+           if (ContenidoEnOtro){
+          int tamanio = Personas[i].CantidadDeRelaciones + Personas[j].CantidadDeRelaciones - CantidadDeElementosRepetidos(Personas[i],Personas[j]);
+           Persona *Lista = new Persona[tamanio];
+           int Cargados =0;
+           for (int k = 0; i < Personas[j].CantidadDeRelaciones; k++)
+           {
+            Lista[k] = Personas[j].Relaciones[k];
+            Cargados++;
+           }
+
+           for (int k = 0; k < Personas[i].CantidadDeRelaciones; k++)
+           {
+             bool Duplicado = false;
+               for (int l = 0; l < Cargados; l++){
+                 if (Personas[i].Relaciones[k].Id == Lista[l].Id)
+                 {
+                   Duplicado = true;
+                    break;
+                 }
+               }
+                if (!Duplicado) {
+                    Lista[Cargados] = Personas[i].Relaciones[i];
+                     Cargados++;
+                }
+           }
+           
+          Personas[j].CantidadDeRelaciones = Cargados;
+           delete[] Personas[j].Relaciones;
+           Personas[j].Relaciones = Lista;
+          
+           
+        }
+
+         if (!ContenidoEnOtro){
+          int tamanio = Personas[i].CantidadDeRelaciones + Personas[j].CantidadDeRelaciones - CantidadDeElementosRepetidos(Personas[i],Personas[j]);
+           Persona *Lista = new Persona[tamanio];
+           int Cargados =0;
+           for (int k = 0; i < Personas[j].CantidadDeRelaciones; k++)
+           {
+            Lista[k] = Personas[j].Relaciones[k];
+            Cargados++;
+           }
+           Lista[Cargados] = Personas[i].Origen;
+           Cargados++;
+           for (int k = 0; k < Personas[i].CantidadDeRelaciones; k++)
+           {
+             bool Duplicado = false;
+               for (int l = 0; l < Cargados; l++){
+                 if (Personas[i].Relaciones[k].Id == Lista[l].Id)
+                 {
+                   Duplicado = true;
+                    break;
+                 }
+               }
+                if (!Duplicado) {
+                    Lista[Cargados] = Personas[i].Relaciones[i];
+                    Cargados++;
+                }
+           }
+           
+           Personas[j].CantidadDeRelaciones = Cargados;
+           delete[] Personas[j].Relaciones;
+           Personas[j].Relaciones = Lista;
+          
+           
+        }
+      }
+      
+      
+   }
+   
+  }
+  
 
 
 
+for (int i = 0; i < PersonasCanti; i++)
+{
+  for (int j = 1; j < PersonasCanti; j++)
+  {
+    if (ContenidoEn(Personas[i],Personas[j])){
+           Personas[j] = Sospechoso();
+    }
+  }
+  
+}
+
+for (int i = 0; i < PersonasCanti; i++)
+{
+  Personas[i].ImprimirLista();
+}
+
+
+// delete[] Lista;
 delete[] Personas;
 return 0; 
 }
