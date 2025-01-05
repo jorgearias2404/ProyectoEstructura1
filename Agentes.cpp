@@ -133,16 +133,7 @@ void ImprimirLista(Persona *Personas,int N){
 
 }
 
-void LLenarId(Persona *Personas,int N){
-
-  for (int i = 0; i < N; i++)
-  {
-      Personas[i].Id=i;
-  }
-  
-
-}
-
+//ESTAS FUNCIONES SOLO PARA LA FUNCION DE CAMBIAFORMAS
 bool AlturaSospechosa(Persona Base,Persona Clon){
      if (ValidarRangoError(Base.Altura,Clon.Altura))
      {
@@ -242,21 +233,6 @@ if (Clon.Magia!=true&&Base.Magia!=true)
 return false;
 }
 
-Persona Clonar(Persona B){
-     Persona A;
-    A.Guardado = B.Guardado;
-    A.Id = B.Id; // Asegúrate de copiar el Id
-    A.Nombre = B.Nombre;
-    A.Especie = B.Especie;
-    A.Altura = B.Altura;
-    A.Magia = B.Magia;
-    A.Mi_Rostro.Profundidad_Ojos = B.Mi_Rostro.Profundidad_Ojos;
-    A.Mi_Rostro.Distancia_Ojos = B.Mi_Rostro.Distancia_Ojos;
-    A.Mi_Rostro.Distancia_Frente_Nariz = B.Mi_Rostro.Distancia_Frente_Nariz; // Corregir este campo
-    A.Mi_Rostro.Distancia_Nariz_Labio = B.Mi_Rostro.Distancia_Nariz_Labio;
-     return A;
-}
-
 
 
 class Sospechoso
@@ -346,22 +322,7 @@ Persona* CargarRelaciones(  Persona Origen, Sospechoso* Arreglo, int Tamanio, in
 }
 
 
-void CorregirErrorDeCarga(Persona* Arreglo, int Tamanio, Sospechoso& Sospechoso) {
-    for (int i = 0; i < Tamanio; i++) {
-        if (Sospechoso.Origen.Nombre == Arreglo[i].Nombre) {
-            Sospechoso.Origen.Id = Arreglo[i].Id;
-        }
-    }
 
-    for (int i = 0; i < Tamanio; i++) {
-        for (int j = 0; j < Sospechoso.CantidadDeRelaciones; j++) {
-            if (Sospechoso.Relaciones[j].Nombre == Arreglo[i].Nombre) {
-                Sospechoso.Relaciones[j].Id = Arreglo[i].Id;
-            }
-        }
-    }
-}
-//TERMINAR FUNCION DE CONTENCION
 bool ContenidoEn(Sospechoso A, Sospechoso B) {
  
     
@@ -411,8 +372,6 @@ bool ContenidoEn(Sospechoso A, Sospechoso B) {
        
     return true; // Si todas las relaciones de A están en B, retornar true
 }
-
-//PROBAR
 bool ExisteAlMenosUnoEnOtro(Sospechoso A, Sospechoso B){
 
 
@@ -491,8 +450,6 @@ if (A.CantidadDeRelaciones<B.CantidadDeRelaciones)
 }
  return false;
 }
-
-
 void OrdenarRelaciones(Sospechoso& BASE) {
 
   for (int i = 0; i < BASE.CantidadDeRelaciones; i++)
@@ -521,7 +478,6 @@ void OrdenarRelaciones(Sospechoso& BASE) {
         }
     }
 }
-
 void ImprimirSospechosos(Sospechoso *Personas,int Tamanio){
   for (int i = 0; i < Tamanio; i++)
   {
@@ -540,8 +496,6 @@ void ImprimirSospechosos(Sospechoso *Personas,int Tamanio){
   }
   
 }
-
-
 
 
 int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso2) {
@@ -623,7 +577,7 @@ int PersonasCanti;
     for (int i = 0; i < PersonasCanti; i++)
     {
       Personas[i].Relaciones = CargarRelaciones(Personas[i].Origen,Personas,PersonasCanti,Personas[i].CantidadDeRelaciones,Personas[i].PoseeRelaciones);
-      // Personas[i].ImprimirLista();
+    
     }
 
   //implementando simplificacion AQUI PASAN COSAS LOCAS REQUIERE VALIDACION
@@ -824,6 +778,7 @@ for (int i = 0; i < PersonasCanti; i++)
 
 for (int i = 0; i < PersonasCanti; i++)
 {
+  OrdenarRelaciones(Personas[i]);
   Personas[i].ImprimirLista();
 }
 
