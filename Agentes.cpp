@@ -565,6 +565,102 @@ Sospechoso* CargarElementos() {
     return personas;
 }
 
+//funciones de simplificacion ARREGLAR
+bool OrigenEnArreglo(Sospechoso A,Sospechoso B){
+   for (int i = 0; i < A.CantidadDeRelaciones; i++)
+   {
+    if (B.Origen.Id == A.Relaciones[i].Id)
+    {
+      return true;
+    }
+    
+   }
+   return false;
+}
+
+void Copia(Sospechoso A,Sospechoso B)
+{
+ if (OrigenEnArreglo(A,B))
+ {
+    int tamanio = A.CantidadDeRelaciones + B.CantidadDeRelaciones - CantidadDeElementosRepetidos(A,B);
+    Persona *Lista = new Persona[tamanio];
+    int Almacenados = 0;
+    for (int i = 0; i < A.CantidadDeRelaciones; i++)
+    {
+      Lista[i] = A.Relaciones[i];
+      Almacenados++;
+    }
+    
+       for (int i = 0; i < B.CantidadDeRelaciones; i++)
+           {
+             bool Duplicado = false;
+               for (int j = 0; j < Almacenados; j++){
+                 if (B.Relaciones[i].Id == Lista[j].Id)
+                 {
+                   Duplicado = true;
+                    break;
+                 }
+               }
+                if (!Duplicado) {
+                    Lista[Almacenados] = B.Relaciones[i];
+                    Almacenados++;
+                }
+           }
+
+           A.CantidadDeRelaciones = Almacenados;
+           delete[] A.Relaciones;
+           A.Relaciones = Lista;
+    
+ }
+ 
+ if (!OrigenEnArreglo(A,B))
+ {
+   int tamanio = 1 + A.CantidadDeRelaciones + B.CantidadDeRelaciones - CantidadDeElementosRepetidos(A,B);
+    Persona *Lista = new Persona[tamanio];
+    int Almacenados = 0;
+    for (int i = 0; i < A.CantidadDeRelaciones; i++)
+    {
+      Lista[i] = A.Relaciones[i];
+      Almacenados++;
+    }
+      Lista[Almacenados] = B.Origen;
+      Almacenados++;
+       for (int i = 0; i < B.CantidadDeRelaciones; i++)
+           {
+             bool Duplicado = false;
+               for (int j = 0; j < Almacenados; j++){
+                 if (B.Relaciones[i].Id == Lista[j].Id)
+                 {
+                   Duplicado = true;
+                    break;
+                 }
+               }
+                if (!Duplicado) {
+                    Lista[Almacenados] = B.Relaciones[i];
+                    Almacenados++;
+                }
+           }
+
+           A.CantidadDeRelaciones = Almacenados;
+           delete[] A.Relaciones;
+           A.Relaciones = Lista;
+ }
+ 
+}
+
+void Final(Sospechoso A,Sospechoso B){
+  if (A.CantidadDeRelaciones > B.CantidadDeRelaciones)
+  {
+    Copia(A,B);
+  }
+  else
+  {
+    Copia(B,A);
+  }
+}
+
+
+
 int main(){
 
 int PersonasCanti;
@@ -580,7 +676,7 @@ int PersonasCanti;
     
     }
 
-  //implementando simplificacion AQUI PASAN COSAS LOCAS REQUIERE VALIDACION
+//  implementando simplificacion AQUI PASAN COSAS LOCAS REQUIERE VALIDACION
 
   for (int i = 0; i < PersonasCanti ; i++)
   {
