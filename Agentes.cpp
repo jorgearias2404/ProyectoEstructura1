@@ -333,7 +333,9 @@ Persona* CargarRelaciones(  Persona Origen, Sospechoso* Arreglo, int Tamanio, in
 
 bool ContenidoEn(Sospechoso A, Sospechoso B) {
  
-    
+       
+       
+       
         bool OrigenEnArreglo =false;
 
             for (int i = 0; i < A.CantidadDeRelaciones; i++)
@@ -447,18 +449,8 @@ void ImprimirSospechosos(Sospechoso *Personas,int Tamanio){
   
 }
 
-
 int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso2) {
     int cantidadRepetidos = 0;
-
-
-    // Verificar si el origen de sospechoso2 está en el arreglo de sospechoso1
-    for (int i = 0; i < sospechoso1.CantidadDeRelaciones; i++) {
-        if (sospechoso2.Origen.Id == sospechoso1.Relaciones[i].Id) {
-            cantidadRepetidos++;
-            break;
-        }
-    }
 
     // Verificar si hay elementos repetidos en los arreglos de ambos sospechosos
     for (int i = 0; i < sospechoso1.CantidadDeRelaciones; i++) {
@@ -468,6 +460,18 @@ int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso
                 break;
             }
         }
+    }
+
+    // Verificar si el origen de sospechoso2 está en el arreglo de sospechoso1
+    bool origenRepetido = false;
+    for (int i = 0; i < sospechoso1.CantidadDeRelaciones; i++) {
+        if (sospechoso2.Origen.Id == sospechoso1.Relaciones[i].Id) {
+            origenRepetido = true;
+            break;
+        }
+    }
+    if (origenRepetido) {
+        cantidadRepetidos++;
     }
 
     return cantidadRepetidos;
@@ -523,7 +527,16 @@ void FusionarRelaciones(Sospechoso& destino, Sospechoso& fuente) {
     int Cargados = 0;
 
     for (int k = 0; k < destino.CantidadDeRelaciones; k++) {
-        Lista[Cargados++] = destino.Relaciones[k];
+        bool Duplicado = false;
+        for (int l = 0; l < Cargados; l++) {
+            if (destino.Relaciones[k].Id == Lista[l].Id) {
+                Duplicado = true;
+                break;
+            }
+        }
+        if (!Duplicado) {
+            Lista[Cargados++] = destino.Relaciones[k];
+        }
     }
 
     for (int k = 0; k < fuente.CantidadDeRelaciones; k++) {
@@ -544,16 +557,21 @@ void FusionarRelaciones(Sospechoso& destino, Sospechoso& fuente) {
     destino.Relaciones = Lista;
 }
 
+
 void FusionarRelacionesIncluyendoOrigen(Sospechoso& destino, Sospechoso& fuente) {
     int tamanio = 1 + destino.CantidadDeRelaciones + fuente.CantidadDeRelaciones - CantidadDeElementosRepetidos(destino, fuente);
     Persona* Lista = new Persona[tamanio];
     int Cargados = 0;
 
     for (int k = 0; k < destino.CantidadDeRelaciones; k++) {
-        Lista[Cargados++] = destino.Relaciones[k];
+        if (destino.Relaciones[k].Id != destino.Origen.Id) {
+            Lista[Cargados++] = destino.Relaciones[k];
+        }
     }
 
-    Lista[Cargados++] = fuente.Origen;
+    if (fuente.Origen.Id != destino.Origen.Id) {
+        Lista[Cargados++] = fuente.Origen;
+    }
 
     for (int k = 0; k < fuente.CantidadDeRelaciones; k++) {
         bool Duplicado = false;
@@ -563,7 +581,7 @@ void FusionarRelacionesIncluyendoOrigen(Sospechoso& destino, Sospechoso& fuente)
                 break;
             }
         }
-        if (!Duplicado) {
+        if (!Duplicado && fuente.Relaciones[k].Id != destino.Origen.Id) {
             Lista[Cargados++] = fuente.Relaciones[k];
         }
     }
@@ -571,6 +589,14 @@ void FusionarRelacionesIncluyendoOrigen(Sospechoso& destino, Sospechoso& fuente)
     destino.CantidadDeRelaciones = Cargados;
     delete[] destino.Relaciones;
     destino.Relaciones = Lista;
+}
+bool ContieneOrigen(Sospechoso& sospechoso, int origenId) {
+    for (int i = 0; i < sospechoso.CantidadDeRelaciones; i++) {
+        if (sospechoso.Relaciones[i].Id == origenId) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void ProcesarRelaciones(Sospechoso* Personas, int PersonasCanti) {
@@ -617,7 +643,6 @@ void ProcesarRelaciones(Sospechoso* Personas, int PersonasCanti) {
 void ProcesarRelaciones2(Sospechoso& sospechoso1, Sospechoso& sospechoso2, Sospechoso& sospechoso3) {
     Sospechoso* sospechosos[3] = { &sospechoso1, &sospechoso2, &sospechoso3 };
 
-    
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == j) continue; // Evita comparar un sospechoso consigo mismo
@@ -640,7 +665,9 @@ void ProcesarRelaciones2(Sospechoso& sospechoso1, Sospechoso& sospechoso2, Sospe
                 if (ContenidoEnOtro) {
                     FusionarRelaciones(*sospechosos[i],*sospechosos[j]);
                 } else {
-                    FusionarRelacionesIncluyendoOrigen(*sospechosos[i],*sospechosos[j]);
+                    if (!ContieneOrigen(*sospechosos[i], sospechosos[j]->Origen.Id)) {
+                        FusionarRelacionesIncluyendoOrigen(*sospechosos[i],*sospechosos[j]);
+                    }
                 }
             } else {
                 bool ContenidoEnOtro = false;
@@ -653,7 +680,9 @@ void ProcesarRelaciones2(Sospechoso& sospechoso1, Sospechoso& sospechoso2, Sospe
                 if (ContenidoEnOtro) {
                     FusionarRelaciones(*sospechosos[j],*sospechosos[i]);
                 } else {
-                    FusionarRelacionesIncluyendoOrigen(*sospechosos[j],*sospechosos[i]);
+                    if (!ContieneOrigen(*sospechosos[j], sospechosos[i]->Origen.Id)) {
+ FusionarRelacionesIncluyendoOrigen(*sospechosos[j],*sospechosos[i]);
+                    }
                 }
             }
         }
@@ -723,25 +752,35 @@ B= Personas[Index1];
 C= Personas[Index2];
 
 
+
 ProcesarRelaciones(Personas,PersonasCanti);
 BackTracking(Index1,Index2,Index3,Personas,PersonasCanti);
 
-for (int i = 0; i < PersonasCanti; i++)
-{
-    for (int j = 1; j < PersonasCanti; j++)
-    {
-      if (ContenidoEn(Personas[i],Personas[j]))
-      {
-        Personas[j] = Sospechoso();
-      }
-      
-    }
-}
 
 for (int i = 0; i < PersonasCanti; i++)
 {
     OrdenarRelaciones(Personas[i]);
 }
+
+for (int i = 0; i < PersonasCanti; i++)
+{
+    for (int j = 0; j < PersonasCanti; j++)
+    {
+        if (i!=j)
+        {
+            if(ContenidoEn(Personas[i],Personas[j])){
+               Personas[j] = Sospechoso();
+            }
+        }
+        
+    }
+    
+}
+
+
+
+
+
 
 int CantidadCambiaformas = 0;
 for (int i = 0; i < PersonasCanti; i++)
@@ -752,9 +791,8 @@ for (int i = 0; i < PersonasCanti; i++)
   }
   
 }
-
-
 cout<<CantidadCambiaformas<<endl;
+
 int Index=1;
 for (int i = 0; i < PersonasCanti; i++)
 {
@@ -767,7 +805,7 @@ for (int i = 0; i < PersonasCanti; i++)
   }
 }
 
-
+cout<<ContenidoEn(Personas[1],Personas[0]);
 
 // delete[] Lista;
 delete[] Personas;
