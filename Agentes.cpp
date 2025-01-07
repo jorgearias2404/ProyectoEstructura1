@@ -283,6 +283,14 @@ public:
             cout<<endl;
         }
     }
+    
+    void ImprimirLista2() {
+       for (int i = 0; i < CantidadDeRelaciones; i++)
+       {
+        cout<<Origen.Id<<" - "<<Relaciones[i].Nombre<<endl;
+       }
+       
+    }
   
 };
 
@@ -368,21 +376,7 @@ bool ContenidoEn(Sospechoso A, Sospechoso B) {
 }
 bool ExisteAlMenosUnoEnOtro(Sospechoso A, Sospechoso B){
 
-
-if (A.CantidadDeRelaciones = 0)
-{
-  for (int i = 0; i < B.CantidadDeRelaciones; i++)
-  {
-    if (A.Origen.Id == B.Relaciones[i].Id)
-    {
-      return true;
-    }
-    
-  }
-  return false;
-}
-if (B.CantidadDeRelaciones = 0)
-{
+//VALIDAMOS SI EL ORIGEN ESTA CONTEDNIDO EN EL OTRO ARREGLO
   for (int i = 0; i < A.CantidadDeRelaciones; i++)
   {
     if (B.Origen.Id == A.Relaciones[i].Id)
@@ -391,57 +385,19 @@ if (B.CantidadDeRelaciones = 0)
     }
     
   }
-  return false;
-}
-
-//VALIDAMOS SI EL ORIGEN ESTA CONTEDNIDO EN EL OTRO ARREGLO
-if (A.CantidadDeRelaciones<B.CantidadDeRelaciones)
-{
-       for (int i = 0; i < B.CantidadDeRelaciones; i++)
-                  {
-                    if (A.Origen.Id == B.Relaciones[i].Id)
-                    {
-                      return true;
-                    }
-                  }
-
-
-       for (int i = 0; i < A.CantidadDeRelaciones; i++)
-       {
-        for (int j = 0; i < B.CantidadDeRelaciones; i++)
+  for (int i = 0; i < A.CantidadDeRelaciones; i++)
+  {
+    for (int j = 0;j < B.CantidadDeRelaciones; j++)
+    {
+         if (B.Origen.Id == A.Relaciones[i].Id)
         {
-          if (A.Relaciones[i].Id == B.Relaciones[j].Id )
-          {
-            return true;
-          }
-        }
-        
-       }
-                  
-   
-} else {
-
-        for (int i = 0; i < A.CantidadDeRelaciones; i++)
-                  {
-                    if (B.Origen.Id == A.Relaciones[i].Id)
-                    {
-                      return true;
-                    }
-                  }
+          return true;
+        } 
+    }
     
-        for (int i = 0; i < B.CantidadDeRelaciones; i++)
-       {
-        for (int j = 0; i < A.CantidadDeRelaciones; i++)
-        {
-          if (B.Relaciones[i].Id == A.Relaciones[j].Id )
-          {
-            return true;
-          }
-        }
-        
-       }
-                  
-}
+  }
+  
+  
  return false;
 }
 void OrdenarRelaciones(Sospechoso& BASE) {
@@ -658,6 +614,92 @@ void ProcesarRelaciones(Sospechoso* Personas, int PersonasCanti) {
     }
 }
 
+void ProcesarRelaciones2(Sospechoso& sospechoso1, Sospechoso& sospechoso2, Sospechoso& sospechoso3) {
+    Sospechoso* sospechosos[3] = { &sospechoso1, &sospechoso2, &sospechoso3 };
+
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (i == j) continue; // Evita comparar un sospechoso consigo mismo
+
+            if (ContenidoEn(*sospechosos[i],*sospechosos[j])) {
+                break;
+            }
+            if (!ExisteAlMenosUnoEnOtro(*sospechosos[i],*sospechosos[j])) {
+                break;
+            }
+
+            if (sospechosos[i]->CantidadDeRelaciones > sospechosos[j]->CantidadDeRelaciones) {
+                bool ContenidoEnOtro = false;
+                for (int k = 0; k < sospechosos[j]->CantidadDeRelaciones; k++) {
+                    if (sospechosos[j]->Origen.Id == sospechosos[i]->Relaciones[k].Id) {
+                        ContenidoEnOtro = true;
+                    }
+                }
+
+                if (ContenidoEnOtro) {
+                    FusionarRelaciones(*sospechosos[i],*sospechosos[j]);
+                } else {
+                    FusionarRelacionesIncluyendoOrigen(*sospechosos[i],*sospechosos[j]);
+                }
+            } else {
+                bool ContenidoEnOtro = false;
+                for (int k = 0; k < sospechosos[i]->CantidadDeRelaciones; k++) {
+                    if (sospechosos[i]->Origen.Id == sospechosos[j]->Relaciones[k].Id) {
+                        ContenidoEnOtro = true;
+                    }
+                }
+
+                if (ContenidoEnOtro) {
+                    FusionarRelaciones(*sospechosos[j],*sospechosos[i]);
+                } else {
+                    FusionarRelacionesIncluyendoOrigen(*sospechosos[j],*sospechosos[i]);
+                }
+            }
+        }
+    }
+}
+void CorregirErroresEnCopia(Sospechoso &A)
+{
+ for (int i = 0; i < A.CantidadDeRelaciones; i++)
+ {
+  if (A.Relaciones[i].Id == A.Origen.Id){
+      A.Relaciones[i] = Persona();
+  }
+ }
+ 
+}
+
+void BackTracking(int Index1, int Index2, int Index3, Sospechoso* Personas, int CantidadElementos) {
+    // Condición base: Si Index1 alcanza el final, termina el backtracking
+    if (Index1 >= CantidadElementos) {
+        return;
+    }
+
+    // Si Index2 alcanza el final, incrementa Index1 y reinicia Index2
+    if (Index2 >= CantidadElementos) {
+        BackTracking(Index1 + 1, Index1 + 2, Index1 + 3, Personas, CantidadElementos);
+        return;
+    }
+
+    // Si Index3 alcanza el final, incrementa Index2 y reinicia Index3
+    if (Index3 >= CantidadElementos) {
+      
+        BackTracking(Index1, Index2 + 1, Index2 + 2, Personas, CantidadElementos);
+        return;
+    }
+
+    // Si Index1, Index2, y Index3 son diferentes, llama a ProcesarRelaciones2
+    if (Index1 != Index2 && Index1 != Index3 && Index2 != Index3) {
+        ProcesarRelaciones2(Personas[Index1], Personas[Index2], Personas[Index3]);
+    }
+
+    // Incrementa Index3 y sigue el backtracking
+    BackTracking(Index1, Index2, Index3 + 1, Personas, CantidadElementos);
+}
+
+
+
 int main(){
 
 int PersonasCanti;
@@ -674,26 +716,57 @@ int PersonasCanti;
     }
 
 
-  
-ProcesarRelaciones(Personas,PersonasCanti);
+int Index1=0, Index2 = 0,Index3=0,NumeroSos = PersonasCanti;
+Sospechoso B;
+Sospechoso C;
+B= Personas[Index1];
+C= Personas[Index2];
 
+
+ProcesarRelaciones(Personas,PersonasCanti);
+BackTracking(Index1,Index2,Index3,Personas,PersonasCanti);
 
 for (int i = 0; i < PersonasCanti; i++)
 {
-  for (int j = 1; j < PersonasCanti; j++)
-  {
-    if (ContenidoEn(Personas[i],Personas[j])){
-           Personas[j] = Sospechoso();
+    for (int j = 1; j < PersonasCanti; j++)
+    {
+      if (ContenidoEn(Personas[i],Personas[j]))
+      {
+        Personas[j] = Sospechoso();
+      }
+      
     }
+}
+
+for (int i = 0; i < PersonasCanti; i++)
+{
+    OrdenarRelaciones(Personas[i]);
+}
+
+int CantidadCambiaformas = 0;
+for (int i = 0; i < PersonasCanti; i++)
+{
+  if (Personas[i].CantidadDeRelaciones > 0)
+  {
+    CantidadCambiaformas++;
   }
   
 }
 
+
+cout<<CantidadCambiaformas<<endl;
+int Index=1;
 for (int i = 0; i < PersonasCanti; i++)
 {
-  OrdenarRelaciones(Personas[i]);
-  Personas[i].ImprimirLista();
+  if (Personas[i].CantidadDeRelaciones > 0)
+  {
+    Personas[i].Origen.Id = Index;
+    cout<<Index<<" - "<< Personas[i].Origen.Nombre << " (O) "<<endl;
+    Personas[i].ImprimirLista2();
+    Index++;
+  }
 }
+
 
 
 // delete[] Lista;
