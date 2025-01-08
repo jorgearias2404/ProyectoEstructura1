@@ -95,7 +95,7 @@ bool EnRangoAltura(Persona Base,Persona Clon){
 }
 
 void CantidadPersonas(int& numero){
-   Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
+   Archivo.open("dataBase2.in", ios::in); // se abre el archivo en modo lectura
    
     if (Archivo.fail())
     {
@@ -332,49 +332,42 @@ Persona* CargarRelaciones(  Persona Origen, Sospechoso* Arreglo, int Tamanio, in
 
 
 bool ContenidoEn(Sospechoso A, Sospechoso B) {
- 
-       
-       
-       
-        bool OrigenEnArreglo =false;
+    // Verificar si el origen de B está contenido en las relaciones de A
+    bool OrigenEnArreglo = false;
+    if (A.CantidadDeRelaciones == 0)
+    {
+        return false;
+    }
+    
+    for (int i = 0; i < A.CantidadDeRelaciones; i++) {
+        if (B.Origen.Id == A.Relaciones[i].Id || B.Origen.Id == A.Origen.Id) {
+            OrigenEnArreglo = true;
+            break;
+        }
+    }
 
-            for (int i = 0; i < A.CantidadDeRelaciones; i++)
-                  {
-                    if (B.Origen.Id == A.Relaciones[i].Id)
-                    {
-                      OrigenEnArreglo = true;
-                    }
-                  }
+    // Si el origen de B no está contenido en A, retorna falso
+    if (!OrigenEnArreglo) {
+        return false;
+    }
 
-                  if (OrigenEnArreglo==true && B.CantidadDeRelaciones==0)
-                  {
-                    return true;
-                  }
-                  
-                  if ( OrigenEnArreglo == false)
-                  {
-                      return false;
-                  }
-           
-           for (int i = 0; i < B .CantidadDeRelaciones; i++)
-              {
-                bool Encontrado =false;
-                for (int j = 0; j < A.CantidadDeRelaciones; j++)
-                {
-              
-                  
-                  if (B.Relaciones[i].Id == A.Relaciones[j].Id)
-                  {
-                    Encontrado =true;
-                  }
-                  
-                }
-                if (Encontrado ==false)
-                {
-                  return false;
-                } 
-              }    
-    return true; // Si todas las relaciones de A están en B, retornar true
+    // Verificar si todas las relaciones de B están contenidas en A
+    for (int i = 0; i < B.CantidadDeRelaciones; i++) {
+        bool RelacionEncontrada = false;
+        for (int j = 0; j < A.CantidadDeRelaciones; j++) {
+            if (B.Relaciones[i].Id == A.Relaciones[j].Id) {
+                RelacionEncontrada = true;
+                break;
+            }
+        }
+        // Si alguna relación de B no está en A, no está contenido
+        if (!RelacionEncontrada) {
+            return false;
+        }
+    }
+
+    // Si todas las relaciones y el origen de B están contenidas en A, retorna verdadero
+    return true;
 }
 bool ExisteAlMenosUnoEnOtro(Sospechoso A, Sospechoso B){
 
@@ -477,7 +470,7 @@ int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso
     return cantidadRepetidos;
 }
 Sospechoso* CargarElementos() {
-    Archivo.open("dataBase.in", ios::in);
+    Archivo.open("dataBase2.in", ios::in);
     if (Archivo.fail()) {
         cout << "Error al abrir el archivo" << endl;
         return nullptr;
@@ -762,25 +755,17 @@ for (int i = 0; i < PersonasCanti; i++)
     OrdenarRelaciones(Personas[i]);
 }
 
-for (int i = 0; i < PersonasCanti; i++)
-{
-    for (int j = 0; j < PersonasCanti; j++)
-    {
-        if (i!=j)
-        {
-            if(ContenidoEn(Personas[i],Personas[j])){
-               Personas[j] = Sospechoso();
+for (int i = 0; i < PersonasCanti; i++) {
+    for (int j = 0; j < PersonasCanti; j++) {
+        if (i != j) {
+            // Si B está completamente contenido en A
+            if (ContenidoEn(Personas[i], Personas[j])) {
+                // Reiniciar B (Persona[j])
+                Personas[j] = Sospechoso();
             }
         }
-        
     }
-    
 }
-
-
-
-
-
 
 int CantidadCambiaformas = 0;
 for (int i = 0; i < PersonasCanti; i++)
@@ -798,14 +783,13 @@ for (int i = 0; i < PersonasCanti; i++)
 {
   if (Personas[i].CantidadDeRelaciones > 0)
   {
+
     Personas[i].Origen.Id = Index;
     cout<<Index<<" - "<< Personas[i].Origen.Nombre << " (O) "<<endl;
     Personas[i].ImprimirLista2();
     Index++;
   }
 }
-
-cout<<ContenidoEn(Personas[1],Personas[0]);
 
 // delete[] Lista;
 delete[] Personas;
