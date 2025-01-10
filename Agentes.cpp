@@ -95,7 +95,7 @@ bool EnRangoAltura(Persona Base,Persona Clon){
 }
 
 void CantidadPersonas(int& numero){
-   Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
+   Archivo.open("dataBase7.in", ios::in); // se abre el archivo en modo lectura
    
     if (Archivo.fail())
     {
@@ -388,6 +388,7 @@ bool ContenidoEn(Sospechoso A, Sospechoso B) {
     // Si todas las relaciones y el origen de B están contenidas en A, retorna verdadero
     return true;
 }
+
 bool ExisteAlMenosUnoEnOtro(Sospechoso A, Sospechoso B){
 
 //VALIDAMOS SI EL ORIGEN ESTA CONTEDNIDO EN EL OTRO ARREGLO
@@ -491,7 +492,7 @@ int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso
 
 
 Sospechoso* CargarElementos() {
-    Archivo.open("dataBase.in", ios::in);
+    Archivo.open("dataBase7.in", ios::in);
     if (Archivo.fail()) {
         cout << "Error al abrir el archivo" << endl;
         return nullptr;
@@ -700,16 +701,7 @@ void ProcesarRelaciones2(Sospechoso& sospechoso1, Sospechoso& sospechoso2, Sospe
         }
     }
 }
-void CorregirErroresEnCopia(Sospechoso &A)
-{
- for (int i = 0; i < A.CantidadDeRelaciones; i++)
- {
-  if (A.Relaciones[i].Id == A.Origen.Id){
-      A.Relaciones[i] = Persona();
-  }
- }
- 
-}
+
 
 void BackTracking(int Index1, int Index2, int Index3, Sospechoso* Personas, int CantidadElementos) {
     // Condición base: Si Index1 alcanza el final, termina el backtracking
@@ -737,8 +729,8 @@ void BackTracking(int Index1, int Index2, int Index3, Sospechoso* Personas, int 
 
     // Incrementa Index3 y sigue el backtracking
     BackTracking(Index1, Index2, Index3 + 1, Personas, CantidadElementos);
+    return;
 }
-
 
 
 int main(){
@@ -757,7 +749,7 @@ int PersonasCanti;
     }
 
 
-int Index1=0, Index2 = 0,Index3=0,NumeroSos = PersonasCanti;
+int Index1=0, Index2 = 1,Index3=0,NumeroSos = PersonasCanti;
 
 
 // ProcesarRelaciones(Personas,PersonasCanti);
@@ -790,7 +782,7 @@ for (int i = 0; i < PersonasCanti; i++)
   }
   
 }
-// cout<<CantidadCambiaformas<<endl;
+cout<<CantidadCambiaformas<<endl;
 
 int Index=1;
 for (int i = 0; i < PersonasCanti; i++)
