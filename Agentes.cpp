@@ -95,7 +95,7 @@ bool EnRangoAltura(Persona Base,Persona Clon){
 }
 
 void CantidadPersonas(int& numero){
-   Archivo.open("dataBase7.in", ios::in); // se abre el archivo en modo lectura
+   Archivo.open("dataBase4.in", ios::in); // se abre el archivo en modo lectura
    
     if (Archivo.fail())
     {
@@ -492,7 +492,7 @@ int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso
 
 
 Sospechoso* CargarElementos() {
-    Archivo.open("dataBase7.in", ios::in);
+    Archivo.open("dataBase4.in", ios::in);
     if (Archivo.fail()) {
         cout << "Error al abrir el archivo" << endl;
         return nullptr;
@@ -733,6 +733,26 @@ void BackTracking(int Index1, int Index2, int Index3, Sospechoso* Personas, int 
 }
 
 
+void BacktrackingRelaciones(int index, Sospechoso* Personas, int PersonasCanti) {
+    // Condición base: si el índice supera la cantidad de personas, termina.
+    if (index >= PersonasCanti) {
+        return;
+    }
+
+    // Evaluar relaciones para la persona actual.
+    if (!Personas[index].PoseeRelaciones) {
+        Personas[index].Relaciones = CargarRelaciones(
+            Personas[index].Origen, Personas, PersonasCanti, 
+            Personas[index].CantidadDeRelaciones, Personas[index].PoseeRelaciones
+        );
+    }
+
+    
+
+    // Llamada recursiva para la siguiente persona.
+    BacktrackingRelaciones(index + 1, Personas, PersonasCanti);
+}
+
 int main(){
 
 int PersonasCanti;
@@ -742,19 +762,10 @@ int PersonasCanti;
     if (Personas == nullptr) {
         return 1; // Manejo de error si no se cargan personas
     }
-    for (int i = 0; i < PersonasCanti; i++)
-    {
-      Personas[i].Relaciones = CargarRelaciones(Personas[i].Origen,Personas,PersonasCanti,Personas[i].CantidadDeRelaciones,Personas[i].PoseeRelaciones);
     
-    }
 
-
-int Index1=0, Index2 = 1,Index3=0,NumeroSos = PersonasCanti;
-
-
-// ProcesarRelaciones(Personas,PersonasCanti);
-BackTracking(Index1,Index2,Index3,Personas,PersonasCanti);
-
+BacktrackingRelaciones(0, Personas, PersonasCanti);
+ProcesarRelaciones(Personas,PersonasCanti);
 
 for (int i = 0; i < PersonasCanti; i++)
 {
