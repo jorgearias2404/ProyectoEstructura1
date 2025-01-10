@@ -740,6 +740,31 @@ void BackTracking(int Index1, int Index2, int Index3, Sospechoso* Personas, int 
 }
 
 
+void BacktrackingRelaciones(int index, Sospechoso* Personas, int PersonasCanti) {
+    // Condición base: si el índice supera la cantidad de personas, termina.
+    if (index >= PersonasCanti) {
+        return;
+    }
+
+    // Evaluar relaciones para la persona actual.
+    if (!Personas[index].PoseeRelaciones) {
+        Personas[index].Relaciones = CargarRelaciones(
+            Personas[index].Origen, Personas, PersonasCanti, 
+            Personas[index].CantidadDeRelaciones, Personas[index].PoseeRelaciones
+        );
+    }
+
+    // Mostrar relaciones de la persona si tiene.
+    if (Personas[index].PoseeRelaciones) {
+        cout << "Persona: " << Personas[index].Origen.Nombre << " tiene las siguientes transformaciones:" << endl;
+        Personas[index].ImprimirLista2();
+    } else {
+        cout << "Persona: " << Personas[index].Origen.Nombre << " no tiene transformaciones." << endl;
+    }
+
+    // Llamada recursiva para la siguiente persona.
+    BacktrackingRelaciones(index + 1, Personas, PersonasCanti);
+}
 
 int main(){
 
@@ -762,7 +787,7 @@ int Index1=0, Index2 = 0,Index3=0,NumeroSos = PersonasCanti;
 
 // ProcesarRelaciones(Personas,PersonasCanti);
 BackTracking(Index1,Index2,Index3,Personas,PersonasCanti);
-
+// BacktrackingRelaciones(0, Personas, PersonasCanti);
 
 for (int i = 0; i < PersonasCanti; i++)
 {
