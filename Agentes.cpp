@@ -782,6 +782,7 @@ for (int i = 0; i < PersonasCanti; i++)
   }
   
 }
+
 cout<<CantidadCambiaformas<<endl;
 
 int Index=1;
