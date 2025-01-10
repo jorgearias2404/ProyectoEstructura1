@@ -95,7 +95,7 @@ bool EnRangoAltura(Persona Base,Persona Clon){
 }
 
 void CantidadPersonas(int& numero){
-   Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
+   Archivo.open("dataBase7.in", ios::in); // se abre el archivo en modo lectura
    
     if (Archivo.fail())
     {
@@ -491,7 +491,7 @@ int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso
 
 
 Sospechoso* CargarElementos() {
-    Archivo.open("dataBase.in", ios::in);
+    Archivo.open("dataBase7.in", ios::in);
     if (Archivo.fail()) {
         cout << "Error al abrir el archivo" << endl;
         return nullptr;
@@ -790,7 +790,8 @@ for (int i = 0; i < PersonasCanti; i++)
   }
   
 }
-// cout<<CantidadCambiaformas<<endl;
+
+cout<<CantidadCambiaformas<<endl;
 
 int Index=1;
 for (int i = 0; i < PersonasCanti; i++)
