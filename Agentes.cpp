@@ -95,7 +95,7 @@ bool EnRangoAltura(Persona Base,Persona Clon){
 }
 
 void CantidadPersonas(int& numero){
-   Archivo.open("dataBase2.in", ios::in); // se abre el archivo en modo lectura
+   Archivo.open("dataBase.in", ios::in); // se abre el archivo en modo lectura
    
     if (Archivo.fail())
     {
@@ -294,7 +294,26 @@ public:
   
 };
 
+void Copiar(Sospechoso& Base, Persona* Relaciones, int CantidadRelaciones) {
+    // Liberar la memoria previa si existe
+    if (Base.Relaciones != nullptr) {
+        delete[] Base.Relaciones;
+    }
 
+    // Asignar la cantidad de relaciones
+    Base.CantidadDeRelaciones = CantidadRelaciones;
+
+    // Asignar memoria para las nuevas relaciones
+    Base.Relaciones = new Persona[CantidadRelaciones];
+
+    // Copiar cada persona del arreglo Relaciones a Base.Relaciones
+    for (int i = 0; i < CantidadRelaciones; i++) {
+        Base.Relaciones[i] = Relaciones[i];
+    }
+
+    // Indicar que Base tiene relaciones
+    Base.PoseeRelaciones = (CantidadRelaciones > 0);
+}
 
 Persona* CargarRelaciones(  Persona Origen, Sospechoso* Arreglo, int Tamanio, int &CantidadDeRelaciones, bool &PoseeRelaciones) {
     // Primero, contamos cuántas relaciones hay
@@ -325,7 +344,7 @@ Persona* CargarRelaciones(  Persona Origen, Sospechoso* Arreglo, int Tamanio, in
 
     PoseeRelaciones = true;
 
-    
+  
     return Relaciones;
 }
 
@@ -469,8 +488,10 @@ int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso
 
     return cantidadRepetidos;
 }
+
+
 Sospechoso* CargarElementos() {
-    Archivo.open("dataBase2.in", ios::in);
+    Archivo.open("dataBase.in", ios::in);
     if (Archivo.fail()) {
         cout << "Error al abrir el archivo" << endl;
         return nullptr;
@@ -513,7 +534,7 @@ Sospechoso* CargarElementos() {
 }
 
 
-//
+
 void FusionarRelaciones(Sospechoso& destino, Sospechoso& fuente) {
     int tamanio = destino.CantidadDeRelaciones + fuente.CantidadDeRelaciones - CantidadDeElementosRepetidos(destino, fuente);
     Persona* Lista = new Persona[tamanio];
@@ -545,9 +566,9 @@ void FusionarRelaciones(Sospechoso& destino, Sospechoso& fuente) {
         }
     }
 
-    destino.CantidadDeRelaciones = Cargados;
-    delete[] destino.Relaciones;
-    destino.Relaciones = Lista;
+
+    Copiar(destino,Lista,Cargados);
+    delete[] Lista;
 }
 
 
@@ -578,10 +599,8 @@ void FusionarRelacionesIncluyendoOrigen(Sospechoso& destino, Sospechoso& fuente)
             Lista[Cargados++] = fuente.Relaciones[k];
         }
     }
-
-    destino.CantidadDeRelaciones = Cargados;
-    delete[] destino.Relaciones;
-    destino.Relaciones = Lista;
+    Copiar(destino,Lista,Cargados);
+    delete[] Lista;
 }
 bool ContieneOrigen(Sospechoso& sospechoso, int origenId) {
     for (int i = 0; i < sospechoso.CantidadDeRelaciones; i++) {
@@ -739,14 +758,9 @@ int PersonasCanti;
 
 
 int Index1=0, Index2 = 0,Index3=0,NumeroSos = PersonasCanti;
-Sospechoso B;
-Sospechoso C;
-B= Personas[Index1];
-C= Personas[Index2];
 
 
-
-ProcesarRelaciones(Personas,PersonasCanti);
+// ProcesarRelaciones(Personas,PersonasCanti);
 BackTracking(Index1,Index2,Index3,Personas,PersonasCanti);
 
 
@@ -776,7 +790,7 @@ for (int i = 0; i < PersonasCanti; i++)
   }
   
 }
-cout<<CantidadCambiaformas<<endl;
+// cout<<CantidadCambiaformas<<endl;
 
 int Index=1;
 for (int i = 0; i < PersonasCanti; i++)
