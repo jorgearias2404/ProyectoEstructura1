@@ -451,8 +451,6 @@ int CantidadDeElementosRepetidos(Sospechoso &sospechoso1, Sospechoso &sospechoso
 
     return cantidadRepetidos;
 }
-
-
 //ESTAS FUNCIONES UNEN LOS CONJUNTOS DEPENDIENDO DE ALGUNOS CASOS ESPECIFICOS
 void FusionarRelaciones(Sospechoso& destino, Sospechoso& fuente) {
     int tamanio = destino.CantidadDeRelaciones + fuente.CantidadDeRelaciones - CantidadDeElementosRepetidos(destino, fuente);
@@ -527,7 +525,6 @@ bool ContieneOrigen(Sospechoso& sospechoso, int origenId) {
     }
     return false;
 }
-
 //SE ENCARGA DE GENERAR NUEVOS CONJUNTOS DE RELACIONES 
 void ProcesarRelaciones(Sospechoso* Personas, int PersonasCanti) {
     for (int i = 0; i < PersonasCanti; i++) {
@@ -571,7 +568,7 @@ void ProcesarRelaciones(Sospechoso* Personas, int PersonasCanti) {
 }
 
 
-
+//se encarga de cargar las relaciones de los sospechosos
 void Backtracking(int index, Sospechoso* Personas, int PersonasCanti) {
     // Condición base: si el índice supera la cantidad de personas, termina.
     if (index >= PersonasCanti) {
@@ -591,40 +588,31 @@ void Backtracking(int index, Sospechoso* Personas, int PersonasCanti) {
     // Llamada recursiva para la siguiente persona.
     Backtracking(index + 1, Personas, PersonasCanti);
 }
-
-
-int main(){
-
-int PersonasCanti;
-    Sospechoso* Personas;
-    CantidadPersonas(PersonasCanti);
-    Personas = CargarElementos();
-    if (Personas == nullptr) {
-        return 1; // Manejo de error si no se cargan personas
+//se encarga de simplificar conjuntos contenidos en otros
+void BacktrackingReiniciar(int index, Sospechoso* Personas, int PersonasCanti) {
+    // Condición base: si el índice supera la cantidad de personas, termina.
+    if (index >= PersonasCanti) {
+        return;
     }
-    
 
-Backtracking(0, Personas, PersonasCanti);
-ProcesarRelaciones(Personas,PersonasCanti);
+    // Llamada recursiva para la siguiente persona.
+    BacktrackingReiniciar(index + 1, Personas, PersonasCanti);
 
-for (int i = 0; i < PersonasCanti; i++)
-{
-    OrdenarRelaciones(Personas[i]);
-}
-
-for (int i = 0; i < PersonasCanti; i++) {
+    // Verificar si la persona actual está contenida en alguna otra persona.
     for (int j = 0; j < PersonasCanti; j++) {
-        if (i != j) {
-            // Si B está completamente contenido en A
-            if (ContenidoEn(Personas[i], Personas[j])) {
-                // Reiniciar B (Persona[j])
-                Personas[j] = Sospechoso();
+        if (index != j) {
+            // Si la persona actual está contenida en la persona j, reiniciar la persona actual.
+            if (ContenidoEn(Personas[j], Personas[index])) {
+                Personas[index] = Sospechoso();
+                 return;
             }
         }
     }
+   
 }
 
-int CantidadCambiaformas = 0;
+void SalidaFinal(Sospechoso *Personas,int PersonasCanti){
+    int CantidadCambiaformas = 0;
 for (int i = 0; i < PersonasCanti; i++)
 {
   if (Personas[i].CantidadDeRelaciones > 0)
@@ -650,6 +638,30 @@ for (int i = 0; i < PersonasCanti; i++)
 }
 
 
+}
+
+int main(){
+
+int PersonasCanti;
+    Sospechoso* Personas;
+    CantidadPersonas(PersonasCanti);
+    Personas = CargarElementos();
+    if (Personas == nullptr) {
+        return 1; // Manejo de error si no se cargan personas
+    }
+    
+
+Backtracking(0, Personas, PersonasCanti);
+ProcesarRelaciones(Personas,PersonasCanti);
+
+for (int i = 0; i < PersonasCanti; i++)
+{
+    OrdenarRelaciones(Personas[i]);
+}
+
+BacktrackingReiniciar(0,Personas,PersonasCanti);
+
+SalidaFinal(Personas,PersonasCanti);
 delete[] Personas;
 
     return 0;
